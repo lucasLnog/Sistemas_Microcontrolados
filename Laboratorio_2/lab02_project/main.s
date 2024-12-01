@@ -8,6 +8,7 @@
 ; -------------------------------------------------------------------------------
 ; Declarações EQU - Defines
 ;<NOME>         EQU <VALOR>
+TIMER_TIMER0_GPTMICR_R		EQU	   0x40030024
 ; -------------------------------------------------------------------------------
 ; Área de Dados - Declarações de variáveis
 		AREA  DATA, ALIGN=2
@@ -37,6 +38,9 @@
 		IMPORT SysTick_Init
 		IMPORT PLL_Init
 		IMPORT startMultTable
+		IMPORT 	Timer_Init
+		IMPORT 	TimerSetCount
+		EXPORT 	Timer0A_Handler
 
 
 ; -------------------------------------------------------------------------------
@@ -57,8 +61,13 @@ Start
 ;	B loop
 	
 ; Comece o código aqui <======================================================
-
-;string_test DCB "Hello World!/0"
+Timer0A_Handler
+	LDR R1, =TIMER_TIMER0_GPTMICR_R
+	MOV R0, #1
+	STR R0, [R1]
+	BX LR
+	
+UpdateLeds
 
     ALIGN                           ; garante que o fim da seção está alinhada 
     END                             ; fim do arquivo

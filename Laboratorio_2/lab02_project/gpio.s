@@ -8,6 +8,7 @@ SYSCTL_RCGCTIMER_R   EQU	0x400FE604
 SYSCTL_PRGPIO_R		 EQU    0x400FEA08
 SYSCTL_PRTIMER_R     EQU	0x400FEA04
 NVIC_EN0			 EQU	0xE000E100
+NVIC_PRI4_R			 EQU	0xE000E410
 ; ========================
 ; Definicoes dos Ports
 
@@ -47,9 +48,13 @@ TIMER_TIMER0_GPTMTAM_R 		EQU	   0x40030004
 TIMER_TIMER0_GPTMIMR_R 		EQU	   0x40030018
 TIMER_TIMER0_GPTMICR_R		EQU	   0x40030024
 TIMER_TIMER0_GPTMTAIL_R 	EQU	   0x40030028
+TIMER_TIMER0_GPTMTAPR_R		EQU	   0x40030038
 
 TIMER_0 					EQU    0x1
 TIMER_0A_NVIC				EQU    19
+	
+TIMER_INITIAL_COUNT			EQU    7999999 
+; -------------------------------------------
 ; -------------------------------------------------------------------------------
 ; Área de Dados - Declarações de variáveis
 		AREA  DATA, ALIGN=2
@@ -170,6 +175,77 @@ wait_port_ready
 	POP{R0, R1, R2}
 	BX LR
 	
+;--------------------------------------------------------------------------------
+;Funcao Timer_Init
+;Parâmetros de entrada: Nenhum
+;Parâmetros de saída: Nenhum
+Timer_Init
+	PUSH {LR}
+
+	LDR R0, =SYSCTL_RCGCTIMER_R
+	MOV R1, #2_00000001
+	STR R1, [R0]
+	
+	LDR R0, =SYSCTL_PRTIMER_R
+WaitTimer
+	LDR R1, [R0]
+	CMP R1, #2_00000001
+	BNE WaitTimer
+
+	LDR R0, =TIMER_TIMER0_GPTMCTL_R
+	MOV R1, #0x0
+	STR R1, [R0]
+	
+	LDR R0, =TIMER_TIMER0_GPTMCFG_R
+	MOV R1, #0x00
+	STR R1, [R0]
+	
+	LDR R0, =TIMER_TIMER0_GPTMTAM_R
+	MOV R1, 0x2
+	STR R1, [R0]
+	
+	LDR R0, =TIMER_TIMER0_GPTMTAPR_R
+	MOV R1, 0x0
+	STR R1, [R0]
+	
+	LDR R0, =TIMER_TIMER0_GPTMICR_R
+	MOV R1, #2_0001
+	STR R1, [R0]
+	
+	LDR R0, =TIMER_TIMER0_GPTMIMR_R
+	MOV R1, #2_0001
+	STR R1, [R0]
+	
+	LDR R0, =NVIC_PRI4_R
+	MOV R1, #4
+	LSL R1, R1, #29
+	STR R1, [R0]
+	
+	LDR R0, =NVIC_EN0
+	MOV R1, #1
+	LSL R1, R1, =TIMER_0A_NVIC
+	STR R1, [R0]
+
+	LDR R1, =TIMER_INITIAL_COUNT
+	BL TimerSetCount
+	
+	POP {LR}
+	BX LR
+
+;--------------------------------------------------------------------------------
+;Funcao TimerSetCount
+;Parâmetros de entrada: Recebe como parâmetro o valor armazenado no registrador R1.
+;R1 -> Valor da contagem do timer
+;Parâmetros de saída: Nenhum
+TimerSetCount
+	LDR R0, =TIMER_TIMER0_GPTMTAIL_R
+	STR R1, [R0]
+	
+	LDR R0, =TIMER_TIMER0_GPTMCTL_R
+	MOV R1, #0x1
+	STR R1, [R0]
+	
+	BX LR
 
 ;--------------------------------------------------------------------------------
     ALIGN                          
