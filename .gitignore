@@ -6,8 +6,12 @@
 *.lnp
 *.iex
 *.htm
-
+*.map
 
 #Ignore project files
 *.uvoptx
 *.uvprojx
+*.uvguix.*
+
+#Ignore pdfs
+*.pdf
