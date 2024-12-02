@@ -1,0 +1,13 @@
+#Ignore output Files
+*.o
+*.dep
+*.scvd
+*.axf
+*.lnp
+*.iex
+*.htm
+
+
+#Ignore project files
+*.uvoptx
+*.uvprojx
