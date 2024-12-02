@@ -27,6 +27,7 @@ TIMER_TIMER0_GPTMICR_R		EQU	   0x40030024
 		; Se alguma fun��o do arquivo for chamada em outro arquivo	
         EXPORT Start                ; Permite chamar a fun��o Start a partir de 
 			                        ; outro arquivo. No caso startup.s
+		EXPORT 	Timer0A_Handler
 									
 		; Se chamar alguma fun��o externa	
         ;IMPORT <func>              ; Permite chamar dentro deste arquivo uma 
@@ -37,11 +38,9 @@ TIMER_TIMER0_GPTMICR_R		EQU	   0x40030024
 		IMPORT Write_to_display
 		IMPORT SysTick_Init
 		IMPORT PLL_Init
-		IMPORT startMultTable
+		IMPORT Mult_Table_Init
 		IMPORT 	Timer_Init
-		IMPORT 	TimerSetCount
-		EXPORT 	Timer0A_Handler
-
+		IMPORT 	Timer_set_count
 
 ; -------------------------------------------------------------------------------
 ; Função main()
@@ -94,11 +93,11 @@ loop
 	;Insere valores de R0, R1, e R2 nas strings
 	BL Format_strings
 	
-	MOV R0, =string_label
+	LDR R0, =string_label
 	MOV R1, #0xFFFF
 	BL Write_to_display
 	
-	MOV R0, =string_mul
+	LDR R0, =string_mul
 	BL Write_to_display
 	
 	

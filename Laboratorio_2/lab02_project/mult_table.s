@@ -1,37 +1,37 @@
 ; Desenvolvido para a placa EK-TM4C1294XL
 
 ; -------------------------------------------------------------------------------
-        THUMB                        ; Instruções do tipo Thumb-2
+        THUMB                        ; Instruï¿½ï¿½es do tipo Thumb-2
 ; -------------------------------------------------------------------------------
-; Declarações EQU - Defines
+; Declaraï¿½ï¿½es EQU - Defines
 ;<NOME>         EQU <VALOR>
 ; -------------------------------------------------------------------------------
-; Área de Dados - Declarações de variáveis
+; ï¿½rea de Dados - Declaraï¿½ï¿½es de variï¿½veis
 		AREA  DATA, ALIGN=2
-		; Se alguma variável for chamada em outro arquivo
-		;EXPORT  <var> [DATA,SIZE=<tam>]   ; Permite chamar a variável <var> a 
+		; Se alguma variï¿½vel for chamada em outro arquivo
+		;EXPORT  <var> [DATA,SIZE=<tam>]   ; Permite chamar a variï¿½vel <var> a 
 		                                   ; partir de outro arquivo
-;<var>	SPACE <tam>                        ; Declara uma variável de nome <var>
+;<var>	SPACE <tam>                        ; Declara uma variï¿½vel de nome <var>
                                            ; de <tam> bytes a partir da primeira 
-                                           ; posição da RAM
+                                           ; posiï¿½ï¿½o da RAM
 multTableData SPACE 9
 
 ; -------------------------------------------------------------------------------
-; Área de Código - Tudo abaixo da diretiva a seguir será armazenado na memória de 
-;                  código
+; ï¿½rea de Cï¿½digo - Tudo abaixo da diretiva a seguir serï¿½ armazenado na memï¿½ria de 
+;                  cï¿½digo
         AREA    |.text|, CODE, READONLY, ALIGN=2
 
-		; Se alguma função do arquivo for chamada em outro arquivo	
-		EXPORT startMultTable
+		; Se alguma funï¿½ï¿½o do arquivo for chamada em outro arquivo	
+		EXPORT Mult_table_Init
 			
-		; Se chamar alguma função externa	
+		; Se chamar alguma funï¿½ï¿½o externa	
         ;IMPORT <func>              ; Permite chamar dentro deste arquivo uma 
-									; função <func>
+									; funï¿½ï¿½o <func>
 
 
 ; -------------------------------------------------------------------------------
-; Função startTabuadas()
-startMultTable
+; Funï¿½ï¿½o startTabuadas()
+Mult_Table_Init
 	PUSH {LR}
 
 	LDR R0, =multTableData
@@ -46,8 +46,8 @@ loop
 	POP {LR}
 	BX LR
 
-; Comece o código aqui <======================================================
+; Comece o cï¿½digo aqui <======================================================
 
 
-    ALIGN                           ; garante que o fim da seção está alinhada 
+    ALIGN                           ; garante que o fim da seï¿½ï¿½o estï¿½ alinhada 
     END                             ; fim do arquivo

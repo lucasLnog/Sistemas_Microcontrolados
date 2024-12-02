@@ -1,7 +1,7 @@
 ; -------------------------------------------------------------------------------
-        THUMB                        ; Instruções do tipo Thumb-2
+        THUMB                        ; Instruï¿½ï¿½es do tipo Thumb-2
 ; -------------------------------------------------------------------------------
-; Declarações EQU - Defines
+; Declaraï¿½ï¿½es EQU - Defines
 ;<NOME>         EQU <VALOR>
 SYSCTL_RCGCGPIO_R	 EQU	0x400FE608
 SYSCTL_RCGCTIMER_R   EQU	0x400FE604
@@ -56,32 +56,33 @@ TIMER_0A_NVIC				EQU    19
 TIMER_INITIAL_COUNT			EQU    7999999 
 ; -------------------------------------------
 ; -------------------------------------------------------------------------------
-; Área de Dados - Declarações de variáveis
+; ï¿½rea de Dados - Declaraï¿½ï¿½es de variï¿½veis
 		AREA  DATA, ALIGN=2
-		; Se alguma variável for chamada em outro arquivo
-		;EXPORT  <var> [DATA,SIZE=<tam>]   ; Permite chamar a variável <var> a 
+		; Se alguma variï¿½vel for chamada em outro arquivo
+		;EXPORT  <var> [DATA,SIZE=<tam>]   ; Permite chamar a variï¿½vel <var> a 
 		                                   ; partir de outro arquivo
-;<var>	SPACE <tam>                        ; Declara uma variável de nome <var>
+;<var>	SPACE <tam>                        ; Declara uma variï¿½vel de nome <var>
                                            ; de <tam> bytes a partir da primeira 
-                                           ; posição da RAM		
+                                           ; posiï¿½ï¿½o da RAM		
 
 ; -------------------------------------------------------------------------------
-; Área de Código - Tudo abaixo da diretiva a seguir será armazenado na memória de 
-;                  código
+; ï¿½rea de Cï¿½digo - Tudo abaixo da diretiva a seguir serï¿½ armazenado na memï¿½ria de 
+;                  cï¿½digo
         AREA    |.text|, CODE, READONLY, ALIGN=2
 
-		; Se alguma função do arquivo for chamada em outro arquivo	
-									; Permite chamar a função Start a partir de 
+		; Se alguma funï¿½ï¿½o do arquivo for chamada em outro arquivo	
+									; Permite chamar a funï¿½ï¿½o Start a partir de 
 			                        ; outro arquivo. No caso startup.s
 									
 		EXPORT GPIO_Init
+		EXPORT Timer_set_count
 									
-		; Se chamar alguma função externa	
+		; Se chamar alguma funï¿½ï¿½o externa	
         ;IMPORT <func>              ; Permite chamar dentro deste arquivo uma 
-									; função <func>
+									; funï¿½ï¿½o <func>
 
 ; -------------------------------------------------------------------------------
-; Função main()
+; Funï¿½ï¿½o main()
 GPIO_Init
 	PUSH{LR}
 	; R3 -> Endereco base da porta, e.g GPIO_PORTA_AHB
@@ -177,8 +178,8 @@ wait_port_ready
 	
 ;--------------------------------------------------------------------------------
 ;Funcao Timer_Init
-;Parâmetros de entrada: Nenhum
-;Parâmetros de saída: Nenhum
+;Parï¿½metros de entrada: Nenhum
+;Parï¿½metros de saï¿½da: Nenhum
 Timer_Init
 	PUSH {LR}
 
@@ -227,17 +228,17 @@ WaitTimer
 	STR R1, [R0]
 
 	LDR R1, =TIMER_INITIAL_COUNT
-	BL TimerSetCount
+	BL Timer_set_count
 	
 	POP {LR}
 	BX LR
 
 ;--------------------------------------------------------------------------------
 ;Funcao TimerSetCount
-;Parâmetros de entrada: Recebe como parâmetro o valor armazenado no registrador R1.
+;Parï¿½metros de entrada: Recebe como parï¿½metro o valor armazenado no registrador R1.
 ;R1 -> Valor da contagem do timer
-;Parâmetros de saída: Nenhum
-TimerSetCount
+;Parï¿½metros de saï¿½da: Nenhum
+Timer_set_count
 	LDR R0, =TIMER_TIMER0_GPTMTAIL_R
 	STR R1, [R0]
 	
