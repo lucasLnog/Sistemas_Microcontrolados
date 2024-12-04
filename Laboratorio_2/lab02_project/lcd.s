@@ -51,6 +51,7 @@ GPIO_PUR_OFF				EQU	   0x510
 		EXPORT Write_to_display
 		EXPORT Display_Init
 		EXPORT Issue_data
+		EXPORT Issue_cmd
 									
 		; Se chamar alguma função externa	
         ;IMPORT <func>              ; Permite chamar dentro deste arquivo uma 

@@ -1,7 +1,13 @@
 ; -------------------------------------------------------------------------------
+<<<<<<< Updated upstream
         THUMB                        ; Instruções do tipo Thumb-2
 ; -------------------------------------------------------------------------------
 ; Declarações EQU - Defines
+=======
+        THUMB                        ; Instru??es do tipo Thumb-2
+; -------------------------------------------------------------------------------
+; Declara??es EQU - Defines
+>>>>>>> Stashed changes
 ;<NOME>         EQU <VALOR>
 SYSCTL_RCGCGPIO_R	 EQU	0x400FE608
 SYSCTL_RCGCTIMER_R   EQU	0x400FE604
@@ -9,6 +15,8 @@ SYSCTL_PRGPIO_R		 EQU    0x400FEA08
 SYSCTL_PRTIMER_R     EQU	0x400FEA04
 NVIC_EN0			 EQU	0xE000E100
 NVIC_PRI4_R			 EQU	0xE000E410
+NVIC_EN1_R 			 EQU    0xE000E104
+NVIC_PRI12_R		 EQU    0xE000E430
 ; ========================
 ; Definicoes dos Ports
 
@@ -41,21 +49,20 @@ GPIO_PORTQ					EQU	   0xE
 GPIO_PORTK					EQU	   0x9
 GPIO_PORTM					EQU	   0xB
 
-;TIMER
-TIMER_TIMER0_GPTMCTL_R      EQU    0x4003000C
-TIMER_TIMER0_GPTMCFG_R 		EQU	   0x40030000
-TIMER_TIMER0_GPTMTAM_R 		EQU	   0x40030004
-TIMER_TIMER0_GPTMIMR_R 		EQU	   0x40030018
-TIMER_TIMER0_GPTMICR_R		EQU	   0x40030024
-TIMER_TIMER0_GPTMTAIL_R 	EQU	   0x40030028
-TIMER_TIMER0_GPTMTAPR_R		EQU	   0x40030038
-
-TIMER_0 					EQU    0x1
-TIMER_0A_NVIC				EQU    19
+;INTERRUPÇÃO DO PORT J
+GPIO_PORTJ_AHB_IM_R         EQU    0x40060410
+GPIO_PORTJ_AHB_IS_R			EQU    0x40060404
+GPIO_PORTJ_AHB_IBE_R		EQU    0x40060408
+GPIO_PORTJ_AHB_IEV_R		EQU    0x4006040C
+GPIO_PORTJ_AHB_ICR_R		EQU    0x4006041C
+PORTJ0_NVIC					EQU    19
 	
-TIMER_INITIAL_COUNT			EQU    7999999 
+;PORTJ
+GPIO_PORTJ_AHB_PUR_R		EQU    0x40060510
+
 ; -------------------------------------------
 ; -------------------------------------------------------------------------------
+<<<<<<< Updated upstream
 ; Área de Dados - Declarações de variáveis
 		AREA  DATA, ALIGN=2
 		; Se alguma variável for chamada em outro arquivo
@@ -72,16 +79,44 @@ TIMER_INITIAL_COUNT			EQU    7999999
 
 		; Se alguma função do arquivo for chamada em outro arquivo	
 									; Permite chamar a função Start a partir de 
+=======
+; ?rea de Dados - Declara??es de vari?veis
+		AREA  DATA, ALIGN=2
+		; Se alguma vari?vel for chamada em outro arquivo
+		;EXPORT  <var> [DATA,SIZE=<tam>]   ; Permite chamar a vari?vel <var> a 
+		                                   ; partir de outro arquivo
+;<var>	SPACE <tam>                        ; Declara uma vari?vel de nome <var>
+                                           ; de <tam> bytes a partir da primeira 
+                                           ; posi??o da RAM		
+
+; -------------------------------------------------------------------------------
+; ?rea de C?digo - Tudo abaixo da diretiva a seguir ser? armazenado na mem?ria de 
+;                  c?digo
+        AREA    |.text|, CODE, READONLY, ALIGN=2
+
+		; Se alguma fun??o do arquivo for chamada em outro arquivo	
+									; Permite chamar a fun??o Start a partir de 
+>>>>>>> Stashed changes
 			                        ; outro arquivo. No caso startup.s
 									
 		EXPORT GPIO_Init
 									
+<<<<<<< Updated upstream
 		; Se chamar alguma função externa	
         ;IMPORT <func>              ; Permite chamar dentro deste arquivo uma 
 									; função <func>
 
 ; -------------------------------------------------------------------------------
 ; Função main()
+=======
+		; Se chamar alguma fun??o externa	
+        ;IMPORT <func>              ; Permite chamar dentro deste arquivo uma 
+									; fun??o <func>
+		IMPORT PORTJ_Interruption_Set
+
+; -------------------------------------------------------------------------------
+; Fun??o main()
+>>>>>>> Stashed changes
 GPIO_Init
 	PUSH{LR}
 	; R3 -> Endereco base da porta, e.g GPIO_PORTA_AHB
@@ -107,8 +142,17 @@ GPIO_Init
 	;Configurar PURs
 	
 	;PORTJ J0-1 entrada
+	LDR R3, =GPIO_PORTJ_AHB
+	MOV R4, #GPIO_PORTJ
+	MOV R5, #0x01
+	MOV R6, R5
+	BL PORT_Init_Generic
 	;Configurar PUR
+	LDR R0, =GPIO_PORTJ_AHB_PUR_R
+	MOV R1, #2_00000001
+	STR R1, [R0]
 	;Configurar Interrupcoes
+	BL PORTJ_Interruption_Set
 	
 	;PORTA A4-7
 	LDR R3, =GPIO_PORTA_AHB
@@ -174,6 +218,7 @@ wait_port_ready
 	
 	POP{R0, R1, R2}
 	BX LR
+<<<<<<< Updated upstream
 	
 ;--------------------------------------------------------------------------------
 ;Funcao Timer_Init
@@ -240,13 +285,10 @@ WaitTimer
 TimerSetCount
 	LDR R0, =TIMER_TIMER0_GPTMTAIL_R
 	STR R1, [R0]
-	
-	LDR R0, =TIMER_TIMER0_GPTMCTL_R
-	MOV R1, #0x1
-	STR R1, [R0]
-	
-	BX LR
+=======
 
 ;--------------------------------------------------------------------------------
+>>>>>>> Stashed changes
+	
     ALIGN                          
     END                            
