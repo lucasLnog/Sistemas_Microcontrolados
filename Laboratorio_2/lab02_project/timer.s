@@ -1,17 +1,62 @@
-; Exemplo.s
-; Desenvolvido para a placa EK-TM4C1294XL
-; Prof. Guilherme Peron
-; 12/03/2018
-
 ; -------------------------------------------------------------------------------
         THUMB                        ; Instruções do tipo Thumb-2
 ; -------------------------------------------------------------------------------
 ; Declarações EQU - Defines
 ;<NOME>         EQU <VALOR>
-LABEL_NUM 		EQU 0x0B
-MUL_NUM1		EQU 0x00
-MUL_NUM2		EQU 0x05
-MUL_RES			EQU	0x09
+SYSCTL_RCGCGPIO_R	 EQU	0x400FE608
+SYSCTL_RCGCTIMER_R   EQU	0x400FE604
+SYSCTL_PRGPIO_R		 EQU    0x400FEA08
+SYSCTL_PRTIMER_R     EQU	0x400FEA04
+NVIC_EN0			 EQU	0xE000E100
+NVIC_PRI4_R			 EQU	0xE000E410
+; ========================
+; Definicoes dos Ports
+
+; PORT BASES
+GPIO_PORTA_AHB				EQU    0x40058000
+GPIO_PORTB_AHB				EQU	   0x40059000
+GPIO_PORTJ_AHB				EQU	   0x40060000
+GPIO_PORTN_AHB				EQU	   0x40064000
+GPIO_PORTP_AHB				EQU	   0x40065000
+GPIO_PORTQ_AHB				EQU	   0x40066000
+GPIO_PORTK_AHB				EQU	   0x40061000
+GPIO_PORTM_AHB				EQU	   0x40063000
+GPIO_PORTL_AHB				EQU	   0x40062000
+
+
+; OFFSETS
+GPIO_DATA_OFF				EQU	   0x3FC 
+GPIO_AMSEL_OFF				EQU	   0x528
+GPIO_PCTL_OFF				EQU	   0x52C
+GPIO_DIR_OFF				EQU	   0x400
+GPIO_AFSEL_OFF				EQU	   0x420
+GPIO_DEN_OFF				EQU	   0x51C
+GPIO_PUR_OFF				EQU	   0x510
+	
+;GPIO SYSCTL MAPING
+GPIO_PORTA					EQU	   0x0
+GPIO_PORTB					EQU	   0x1
+GPIO_PORTJ					EQU	   0x8
+GPIO_PORTN					EQU	   0xC
+GPIO_PORTP					EQU	   0xD
+GPIO_PORTQ					EQU	   0xE
+GPIO_PORTK					EQU	   0x9
+GPIO_PORTM					EQU	   0xB
+GPIO_PORTL					EQU	   0xA
+
+;TIMER
+TIMER_TIMER0_GPTMCTL_R      EQU    0x4003000C
+TIMER_TIMER0_GPTMCFG_R 		EQU	   0x40030000
+TIMER_TIMER0_GPTMTAM_R 		EQU	   0x40030004
+TIMER_TIMER0_GPTMIMR_R 		EQU	   0x40030018
+TIMER_TIMER0_GPTMICR_R		EQU	   0x40030024
+TIMER_TIMER0_GPTMTAIL_R 	EQU	   0x40030028
+TIMER_TIMER0_GPTMTAPR_R		EQU	   0x40030038
+
+TIMER_0 					EQU    0x1
+TIMER_0A_NVIC				EQU    19
+	
+TIMER_INITIAL_COUNT			EQU    7999999 
 ; -------------------------------------------------------------------------------
 ; Área de Dados - Declarações de variáveis
 		AREA  DATA, ALIGN=2
@@ -28,174 +73,96 @@ MUL_RES			EQU	0x09
         AREA    |.text|, CODE, READONLY, ALIGN=2
 
 		; Se alguma função do arquivo for chamada em outro arquivo	
-        EXPORT Start                ; Permite chamar a função Start a partir de 
+									; Permite chamar a função Start a partir de 
 			                        ; outro arquivo. No caso startup.s
+									
+		EXPORT Timer_Init
+		EXPORT Timer_set_count
 									
 		; Se chamar alguma função externa	
         ;IMPORT <func>              ; Permite chamar dentro deste arquivo uma 
 									; função <func>
-		IMPORT GPIO_Init
-		IMPORT Display_Init
-		IMPORT Issue_data
-		IMPORT Write_to_display
-		IMPORT SysTick_Init
-		IMPORT PLL_Init
-		IMPORT Read_keyboard
-		IMPORT Pos_to_char
 
 
-; -------------------------------------------------------------------------------
-; Função main()
-Start 
-	BL PLL_Init
-	BL SysTick_Init
-	BL GPIO_Init
-	BL Display_Init
-	
-	LDR R0, =string_test
-	MOV R1, #13
-	BL Write_to_display
-loop
-	BL Read_keyboard
-	
-	;Nenhum botao foi pressionado
-	CMP R5, #0xFF
-	BEQ loop
-	
-	;Entrada:
-	;	R5 -> posicao na matriz
-	;Retorno:
-	;	R0 -> char
-	BL Pos_to_char
-	
-	;verifica se o character pressionado é um numero
-	CMP R0, #'0'
-	BLO loop
-	
-	CMP R0, #'9'
-	BHI loop
-	
-	;R0 -> numero pressionado (int)
-	;R1 -> multipliers[R0] (int)
-	;R2 -> R0 * R3
-	;R3 -> &multipliers
-	
-	; char -> uint
-	SUB R0, #0x30
-	
-	LDR R3, =multipliers
-	LDRB R1, [R3]
-	
-	MUL R2, R0, R1
-	
-	;Configura Timer
-	
-	;Dispara Timer
-	
-	;Insere valores de R0, R1, e R2 nas strings
-	BL Format_strings
-	
-	;Formata display
-	
-	LDR R0, =string_label
-	MOV R1, #0xFFFF
-	BL Write_to_display
-	
-	LDR R0, =string_mul
-	BL Write_to_display
-	
-	
-	B loop
-
-; -------------------------------------------------------------------------------
-;Format_strings()
+;--------------------------------------------------------------------------------
+;Timer_Init()
 ;
 ; Entrada:
-;	R0 -> numero pressinado (int)
-;	R1 -> multiplicador (int)
-;	R2 -> resultado da multiplicacao (int)
-;
+;	void
 ; Saida:
-;	Nao ha
-Format_strings
-	PUSH{R3-R6}
+;	void
+;
+Timer_Init
+	PUSH {LR}
+
+	LDR R0, =SYSCTL_RCGCTIMER_R
+	MOV R1, #2_00000001
+	STR R1, [R0]
 	
-	;Insere R0 na label
-	LDR R3, =string_label
-	ADD R4, R0, #0x30
-	STRB R4, [R3, #LABEL_NUM]
+	LDR R0, =SYSCTL_PRTIMER_R
+WaitTimer
+	LDR R1, [R0]
+	CMP R1, #2_00000001
+	BNE WaitTimer
+
+	LDR R0, =TIMER_TIMER0_GPTMCTL_R
+	MOV R1, #0x0
+	STR R1, [R0]
 	
-	;Insere R0, R1 e R2 em string_mul
-	LDR R3, =string_mul
-	BL int_to_string
+	LDR R0, =TIMER_TIMER0_GPTMCFG_R
+	MOV R1, #0x00
+	STR R1, [R0]
 	
-	STRB R4, [R3, #MUL_NUM1]
-	ADD R4, R1, #0x30
-	STRB R4, [R3, #MUL_NUM2]
+	LDR R0, =TIMER_TIMER0_GPTMTAM_R
+	MOV R1, #0x2
+	STR R1, [R0]
 	
-	LSR R4, R5, #0x08
+	LDR R0, =TIMER_TIMER0_GPTMTAPR_R
+	MOV R1, #0x0
+	STR R1, [R0]
 	
-	CMP R5, #'0'
-	BEQ load_lsd
+	LDR R0, =TIMER_TIMER0_GPTMICR_R
+	MOV R1, #2_0001
+	STR R1, [R0]
 	
-	ADD R6, R3, #MUL_RES
-	STRB R5, [R6], #1
-load_lsd
+	LDR R0, =TIMER_TIMER0_GPTMIMR_R
+	MOV R1, #2_0001
+	STR R1, [R0]
 	
-	;filtra lsd char
-	AND R4, R5, #0x0F
-	STRB R4, [R6], #1
+	LDR R0, =NVIC_PRI4_R
+	MOV R1, #4
+	LSL R1, R1, #29
+	STR R1, [R0]
 	
-	;insere \0 char
-	MOV R4, #'\0'
-	STRB R4, [R6]
+	LDR R0, =NVIC_EN0
+	MOV R1, #1
+	LSL R1, R1, #TIMER_0A_NVIC
+	STR R1, [R0]
+
+	LDR R1, =TIMER_INITIAL_COUNT
+	BL Timer_set_count
 	
-	POP{R3-R6}
+	POP {LR}
 	BX LR
 
-; -------------------------------------------------------------------------------
-;int_to_string
-; 
-; Descricao:
-;	Converte o numero decimal de ate dois digitos em R2
-;	Para uma string, guardada em R6.
+;--------------------------------------------------------------------------------
+;Timer_set_count()
 ;
-; Entrada:
-;	R2 -> numero
+;Entrada:
+;	R1 -> Valor da contagem do timer
 ;
-; Saida:
-;	R5 -> string correspondente
-int_to_string
-	PUSH{R0, R1, R3}
-	MOV R5, #0x0
+;Saida:
+;	void
+;
+Timer_set_count
+	LDR R0, =TIMER_TIMER0_GPTMTAIL_R
+	STR R1, [R0]
 	
-	;Obtem MSD
-	MOV R3, #0x0A
-	UDIV R0, R2, R3
-	ADD R5, R0, #0x30
-	LSL R5, #0x08
+	LDR R0, =TIMER_TIMER0_GPTMCTL_R
+	MOV R1, #0x1
+	STR R1, [R0]
 	
-	;Obtem LSD
-	SUB R1, R2, R0
-	ADD R1, #0x030
-	ORR R5, R1
-	
-	POP{R0, R1}
 	BX LR
 
-
-; -------------------------------------------------------------------------------
-;Variaveis
-
-;strings
-string_test DCB "Hello World!/0"
-string_label DCB "Tabuado do */0"
-string_mul DCB "* x * = */0/0/0/0"
-
-;arrays
-multipliers DCB 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0
-
-; -------------------------------------------------------------------------------
-;FIM
-    ALIGN                           ; garante que o fim da seção está alinhada 
-    END                             ; fim do arquivo
+	ALIGN
+	END
