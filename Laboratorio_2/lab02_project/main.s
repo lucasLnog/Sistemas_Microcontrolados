@@ -16,6 +16,11 @@ MUL_RES			EQU	0x09
 ;<var>	SPACE <tam>                        ; Declara uma variável de nome <var>
                                            ; de <tam> bytes a partir da primeira 
                                            ; posição da RAM	
+
+;bytes
+last_input SPACE 1
+
+;strings
 string_label SPACE 16
 string_mul SPACE 12
 
@@ -59,15 +64,30 @@ Start
 	BL Display_Init
 	BL Variables_Init
 	
+	
+	
 	LDR R0, =string_test
 	MOV R1, #12
 	BL Write_to_display
 loop
 	BL Read_keyboard
 	
+	;Pega ultimo valor lido do teclado,
+	;salva em R1 e guarda o valor recem lido
+	LDR R0, =last_input
+	LDRB R1, [R0]
+	STRB R5, [R0]
+	
+	
 	;Nenhum botao foi pressionado
 	CMP R5, #0xFF
 	BEQ loop
+	
+	;Permite a continuacao da execucao apenas se o ultimo
+	;valor lido foi 0xFF (default, nenhuma tecla apertada)
+	CMP R1, #0xFF
+	BNE loop
+	
 	
 	;Entrada:
 	;	R5 -> posicao na matriz
@@ -104,10 +124,10 @@ loop
 	BL Format_strings
 	
 	;atualiza valor do multiplicador
-	;se atingir 10, o valor retorna a 1
+	;se atingir 0, o valor retorna a 1
 	ADD R1, #0x01
 	CMP R1, #0x0A
-	MOVGE R1, 0x00
+	MOVGE R1, #0x00
 	
 	STRB R1, [R3, R0]
 	
@@ -116,7 +136,7 @@ loop
 	BL Issue_cmd
 	
 	MOV R0, #1640
-	BL SysTick_Wait1us
+	;BL SysTick_Wait1us
 	
 	
 	;Retorna cursor para primera linha
@@ -243,6 +263,11 @@ load_zero
 	
 	CMP R0, R1
 	BLO load_zero
+	
+	;Init last_input
+	LDR R0, =last_input
+	MOV R1, #0xFF
+	STRB R1, [R0]
 	
 	POP{R0, R1}
 	BX LR
