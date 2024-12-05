@@ -82,6 +82,9 @@ TIMER_0A_NVIC				EQU    19
 			                        ; outro arquivo. No caso startup.s
 									
 		EXPORT GPIO_Init
+        EXPORT Toggle_LEDs_activation
+        EXPORT Write_to_LEDs
+
 									
 		; Se chamar alguma função externa	
         ;IMPORT <func>              ; Permite chamar dentro deste arquivo uma 
@@ -231,6 +234,49 @@ GPIOJ_Interrupt_Init
 	POP{R0, R1, LR}
 	BX LR
 
+    LDR R0, =GPIO_PORTP_AHB
+    LDR R1, =GPIO_DATA_OFF
+    LDR R2, [R0, R1]
+    MOV R3, #1
+    LSL R3, #5
+    EOR R2, R3
+    STR R2, [R0, R1]
+
+	POP{R0-R3, LR}
+	BX LR
+
+;--------------------------------------------------------------------------------
+;Funcao Write_to_LEDs
+; R0 -> LEDs
+Write_to_LEDs
+	PUSH{R1-R3, LR}
+
+    LDR R1, =GPIO_PORTA_AHB
+    LDR R2, =GPIO_PORTQ_AHB
+    LDR R3, =GPIO_DATA_OFF
+    STR R0, [R1, R3]
+    STR R0, [R2, R3]
+
+	POP{R1-R3, LR}
+	BX LR
+
+;--------------------------------------------------------------------------------
+;Funcao Toggle_LEDs_activation
+;No parameters
+Toggle_LEDs_activation
+	PUSH{R0-R3, LR}
+
+    LDR R0, =GPIO_PORTP_AHB
+    LDR R1, =GPIO_DATA_OFF
+    LDR R2, [R0, R1]
+    MOV R3, #1
+    LSL R3, #5
+    EOR R2, R3
+    STR R2, [R0, R1]
+
+	POP{R0-R3, LR}
+	BX LR
+	
 ;--------------------------------------------------------------------------------
     ALIGN                          
     END                            

@@ -22,6 +22,7 @@ GPIO_ICR_OFF				EQU	   0x41C
 
 ;bytes
 last_input SPACE 1
+current_mult_table SPACE 1
 
 ;strings
 string_label SPACE 16
@@ -30,8 +31,9 @@ string_mul SPACE 12
 ;arrays
 multipliers SPACE 12
 
-		EXPORT string_label [DATA, SIZE=16]
-		EXPORT string_mul   [DATA, SIZE=12]
+		EXPORT string_label         [DATA, SIZE=16]
+		EXPORT string_mul           [DATA, SIZE=12]
+		EXPORT current_mult_table   [DATA, SIZE=1]
 
 ; -------------------------------------------------------------------------------
 ; Área de Código - Tudo abaixo da diretiva a seguir será armazenado na memória de 
@@ -144,16 +146,16 @@ input_loop
 	
 	; char -> uint
 	SUB R0, #0x30
+
+    ;current_mult_table = num
+    LDR R3, =current_mult_table
+    STRB R0, [R3]
 	
 	;multiplier = multipliers[num]
 	LDR R3, =multipliers
 	LDRB R1, [R3, R0]
 	
 	MUL R2, R0, R1
-	
-	;Configura Timer
-	
-	;Dispara Timer
 	
 	;Insere valores de R0, R1, e R2 nas strings
 	BL Format_strings
