@@ -72,8 +72,8 @@ Start
 	
 	
 	
-	LDR R0, =string_test
-	MOV R1, #12
+	LDR R0, =string_welcome
+	MOV R1, #16
 	BL Write_to_display
 
 	;numero de aquisiçoes a serem feitas
@@ -171,7 +171,7 @@ input_loop
 	BL Issue_cmd
 	
 	MOV R0, #1640
-	;BL SysTick_Wait1us
+	BL SysTick_Wait1us
 	
 	
 	;Retorna cursor para primera linha
@@ -310,7 +310,7 @@ load_zero
 ; -------------------------------------------------------------------------------
 ;GPIO_PORTJ_Handler
 GPIOPortJ_Handler
-	PUSH{R0-R3}
+	PUSH{R0-R3, LR}
 	
 	;R0 -> &next_value
 	;R1 -> &multipliers.last()
@@ -325,18 +325,30 @@ reset_multipliers
 	CMP R0, R1
 	BLO reset_multipliers
 	
+	MOV R0, #0x01
+	BL Issue_cmd
+	
+	MOV R0, #1640
+	BL SysTick_Wait1us
+	
+	LDR R0, =string_welcome
+	MOV R1, #16
+	BL Write_to_display
+	
 	;Limpa interrupcao
 	LDR R0, =GPIO_PORTJ_AHB
 	MOV R1, #0x01
 	STR R1, [R0, #GPIO_ICR_OFF]
+
 	
-	POP{R0-R3}
+	
+	POP{R0-R3, LR}
 	BX LR
 
 ; -------------------------------------------------------------------------------
 ;Constantes
 
-string_test DCB "Hello World!\0"
+string_welcome DCB "Tabotron 2000\0"
 
 ; -------------------------------------------------------------------------------
 ;FIM
