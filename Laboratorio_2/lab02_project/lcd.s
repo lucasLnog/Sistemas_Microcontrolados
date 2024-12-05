@@ -51,7 +51,8 @@ GPIO_PUR_OFF				EQU	   0x510
 		EXPORT Write_to_display
 		EXPORT Display_Init
 		EXPORT Issue_data
-									
+		EXPORT Issue_cmd
+			
 		; Se chamar alguma função externa	
         ;IMPORT <func>              ; Permite chamar dentro deste arquivo uma 
 									; função <func>
@@ -75,13 +76,6 @@ Display_Init
 	MOV R0, #0x24
 	BL SysTick_Wait1us
 	
-	;liga display e cursor
-	;cursor pisca
-	;MOV R0, #0x0F
-	;BL Issue_cmd
-	;MOV R0, #0x24
-	;BL SysTick_Wait1us
-	
 	;configura cursor com autoinc para a direita (0x06)
 	MOV R0, #0x06
 	BL Issue_cmd
@@ -90,12 +84,19 @@ Display_Init
 	
 	;comando de inicializacao do cursor
 	;no barramento de dados (0x0E)
-	MOV R0, #0x0E
+	MOV R0, #0x0C
 	BL Issue_cmd
 	MOV R0, #0x24
+	BL SysTick_Wait1us
 	
 	;reset display
 	MOV R0, #0x01
+	BL Issue_cmd
+	MOV R0, #1640
+	BL SysTick_Wait1us
+	
+	;retorna para a primeira posicao
+	MOV R0, #0x02
 	BL Issue_cmd
 	MOV R0, #1640
 	BL SysTick_Wait1us
@@ -129,11 +130,11 @@ Write_to_display
 	
 	;Zera indexador
 	EOR R3, R3
+	
+	;carrega primeiro char
+	LDRB R0, [R2, R3]
 
 string_loop
-	;carrega char
-	LDRB R0, [R2, R3]
-	
 	;escreve dado no LCD
 	BL Issue_data
 	
@@ -146,12 +147,24 @@ string_loop
 	
 	ADD R3, #0x1
 	
+	;carrega proximo char
+	LDRB R0, [R2, R3]
+	
 	;compara index e string.len()
-	EOR R4, R3, R1
+	CMP R3, R1
+	ITE NE
+		MOVNE R4, #0x01
+		MOVEQ R4, #0x00
+		
+	
 	;compara char com com char NULL, '\0'
-	EOR R5, R0, #0x00
+	CMP R0, #0x00
+	ITE NE
+		MOVNE R5, #0x01
+		MOVEQ R5, #0x00
+	
 	;(index != string.len() && char !== '\0')
-	ANDS R4, R5
+	TST R4, R5
 	
 	BNE string_loop
 	

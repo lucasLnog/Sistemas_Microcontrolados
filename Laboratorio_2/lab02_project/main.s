@@ -1,21 +1,24 @@
 ; -------------------------------------------------------------------------------
-        THUMB                        ; Instru√ß√µes do tipo Thumb-2
+        THUMB                        ; InstruÁıes do tipo Thumb-2
 ; -------------------------------------------------------------------------------
-; Declara√ß√µes EQU - Defines
+; DeclaraÁıes EQU - Defines
 ;<NOME>         EQU <VALOR>
-LABEL_NUM 		EQU 0x0B
-MUL_NUM1		EQU 0x00
-MUL_NUM2		EQU 0x05
-MUL_RES			EQU	0x09
+LABEL_NUM 					EQU 0x0B
+MUL_NUM1					EQU 0x00
+MUL_NUM2					EQU 0x05
+MUL_RES						EQU	0x09
+	
+GPIO_PORTJ_AHB				EQU	   0x40060000
+GPIO_ICR_OFF				EQU	   0x41C
 ; -------------------------------------------------------------------------------
-; √Årea de Dados - Declara√ß√µes de vari√°veis
+; ¡rea de Dados - DeclaraÁıes de vari·veis
 		AREA  DATA, ALIGN=2
-		; Se alguma vari√°vel for chamada em outro arquivo
-		;EXPORT  <var> [DATA,SIZE=<tam>]   ; Permite chamar a vari√°vel <var> a 
+		; Se alguma vari·vel for chamada em outro arquivo
+		;EXPORT  <var> [DATA,SIZE=<tam>]   ; Permite chamar a vari·vel <var> a 
 		                                   ; partir de outro arquivo
-;<var>	SPACE <tam>                        ; Declara uma vari√°vel de nome <var>
+;<var>	SPACE <tam>                        ; Declara uma vari·vel de nome <var>
                                            ; de <tam> bytes a partir da primeira 
-                                           ; posi√ß√£o da RAM	
+                                           ; posiÁ„o da RAM	
 
 ;bytes
 last_input SPACE 1
@@ -31,18 +34,20 @@ multipliers SPACE 12
 		EXPORT string_mul   [DATA, SIZE=12]
 
 ; -------------------------------------------------------------------------------
-; √Årea de C√≥digo - Tudo abaixo da diretiva a seguir ser√° armazenado na mem√≥ria de 
-;                  c√≥digo
+; ¡rea de CÛdigo - Tudo abaixo da diretiva a seguir ser· armazenado na memÛria de 
+;                  cÛdigo
         AREA    |.text|, CODE, READONLY, ALIGN=2
 
-		; Se alguma fun√ß√£o do arquivo for chamada em outro arquivo	
-        EXPORT Start                ; Permite chamar a fun√ß√£o Start a partir de 
+		; Se alguma funÁ„o do arquivo for chamada em outro arquivo	
+        EXPORT Start                ; Permite chamar a funÁ„o Start a partir de 
 			                        ; outro arquivo. No caso startup.s
+							
+
+		EXPORT GPIOPortJ_Handler
 									
-									
-		; Se chamar alguma fun√ß√£o externa	
+		; Se chamar alguma funÁ„o externa	
         ;IMPORT <func>              ; Permite chamar dentro deste arquivo uma 
-									; fun√ß√£o <func>
+									; funÁ„o <func>
 		IMPORT GPIO_Init
 		IMPORT Display_Init
 		IMPORT Issue_data
@@ -52,11 +57,12 @@ multipliers SPACE 12
 		IMPORT Read_keyboard
 		IMPORT Pos_to_char
 		IMPORT SysTick_Wait1us
+		IMPORT SysTick_Wait1ms
 		IMPORT Issue_cmd
 		IMPORT Format_strings
 
 ; -------------------------------------------------------------------------------
-; Fun√ß√£o main()
+; FunÁ„o main()
 Start 
 	BL PLL_Init
 	BL SysTick_Init
@@ -69,8 +75,37 @@ Start
 	LDR R0, =string_test
 	MOV R1, #12
 	BL Write_to_display
-loop
+
+	;numero de aquisiÁoes a serem feitas
+	;para considerar um estado estavel
+	;R5 -> estado lido
+	;R7 -> estado anterior
+	;R8 -> i
+	MOV R7, #0xFF
+
+main_loop
+	MOV R8, #0x00
+input_loop
+	;espera 10ms entre leituras
+	MOV R0, #10
+	BL SysTick_Wait1ms
+	
 	BL Read_keyboard
+	
+	;;leitura_atual == leitura_anterior?
+	CMP R5, R7
+	ADDEQ R8, #0x01
+	
+	;atualiza ultimo valor lido
+	MOV R7, R5
+	
+	;se o leitura_atual != leitura_anterior
+	;reinicia processo de leitura
+	BNE main_loop
+	
+	;leituras_iguais >= 5? estado estavel
+	CMP R8, #0x05
+	BLO input_loop
 	
 	;Pega ultimo valor lido do teclado,
 	;salva em R1 e guarda o valor recem lido
@@ -81,12 +116,12 @@ loop
 	
 	;Nenhum botao foi pressionado
 	CMP R5, #0xFF
-	BEQ loop
+	BEQ main_loop
 	
 	;Permite a continuacao da execucao apenas se o ultimo
 	;valor lido foi 0xFF (default, nenhuma tecla apertada)
 	CMP R1, #0xFF
-	BNE loop
+	BNE main_loop
 	
 	
 	;Entrada:
@@ -95,12 +130,12 @@ loop
 	;	R0 -> char
 	BL Pos_to_char
 	
-	;verifica se o character pressionado √© um numero
+	;verifica se o character pressionado È um numero
 	CMP R0, #'0'
-	BLO loop
+	BLO main_loop
 	
 	CMP R0, #'9'
-	BHI loop
+	BHI main_loop
 	
 	;R0 -> numero pressionado (int)
 	;R1 -> multipliers[R0] (int)
@@ -163,7 +198,7 @@ loop
 	BL Write_to_display
 	
 	
-	B loop
+	B main_loop
 
 
 ; -------------------------------------------------------------------------------
@@ -273,11 +308,37 @@ load_zero
 	BX LR
 
 ; -------------------------------------------------------------------------------
+;GPIO_PORTJ_Handler
+GPIOPortJ_Handler
+	PUSH{R0-R3}
+	
+	;R0 -> &next_value
+	;R1 -> &multipliers.last()
+	;R3 -> loader
+	LDR R0, =multipliers
+	ADD R1, R0, #0x0A
+	MOV R3, #0x00
+	
+reset_multipliers
+	STRB R3, [R0], #0x01
+	
+	CMP R0, R1
+	BLO reset_multipliers
+	
+	;Limpa interrupcao
+	LDR R0, =GPIO_PORTJ_AHB
+	MOV R1, #0x01
+	STR R1, [R0, #GPIO_ICR_OFF]
+	
+	POP{R0-R3}
+	BX LR
+
+; -------------------------------------------------------------------------------
 ;Constantes
 
 string_test DCB "Hello World!\0"
 
 ; -------------------------------------------------------------------------------
 ;FIM
-    ALIGN                           ; garante que o fim da se√ß√£o est√° alinhada 
+    ALIGN                           ; garante que o fim da seÁ„o est· alinhada 
     END                             ; fim do arquivo

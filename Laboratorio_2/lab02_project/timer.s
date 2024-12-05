@@ -1,7 +1,7 @@
 ; -------------------------------------------------------------------------------
-        THUMB                        ; Instru√ß√µes do tipo Thumb-2
+        THUMB                        ; InstruÁıes do tipo Thumb-2
 ; -------------------------------------------------------------------------------
-; Declara√ß√µes EQU - Defines
+; DeclaraÁıes EQU - Defines
 ;<NOME>         EQU <VALOR>
 SYSCTL_RCGCGPIO_R	 EQU	0x400FE608
 SYSCTL_RCGCTIMER_R   EQU	0x400FE604
@@ -58,30 +58,30 @@ TIMER_0A_NVIC				EQU    19
 	
 TIMER_INITIAL_COUNT			EQU    7999999 
 ; -------------------------------------------------------------------------------
-; √Årea de Dados - Declara√ß√µes de vari√°veis
+; ¡rea de Dados - DeclaraÁıes de vari·veis
 		AREA  DATA, ALIGN=2
-		; Se alguma vari√°vel for chamada em outro arquivo
-		;EXPORT  <var> [DATA,SIZE=<tam>]   ; Permite chamar a vari√°vel <var> a 
+		; Se alguma vari·vel for chamada em outro arquivo
+		;EXPORT  <var> [DATA,SIZE=<tam>]   ; Permite chamar a vari·vel <var> a 
 		                                   ; partir de outro arquivo
-;<var>	SPACE <tam>                        ; Declara uma vari√°vel de nome <var>
+;<var>	SPACE <tam>                        ; Declara uma vari·vel de nome <var>
                                            ; de <tam> bytes a partir da primeira 
-                                           ; posi√ß√£o da RAM		
+                                           ; posiÁ„o da RAM		
 
 ; -------------------------------------------------------------------------------
-; √Årea de C√≥digo - Tudo abaixo da diretiva a seguir ser√° armazenado na mem√≥ria de 
-;                  c√≥digo
+; ¡rea de CÛdigo - Tudo abaixo da diretiva a seguir ser· armazenado na memÛria de 
+;                  cÛdigo
         AREA    |.text|, CODE, READONLY, ALIGN=2
 
-		; Se alguma fun√ß√£o do arquivo for chamada em outro arquivo	
-									; Permite chamar a fun√ß√£o Start a partir de 
+		; Se alguma funÁ„o do arquivo for chamada em outro arquivo	
+									; Permite chamar a funÁ„o Start a partir de 
 			                        ; outro arquivo. No caso startup.s
 									
 		EXPORT Timer_Init
 		EXPORT Timer_set_count
 									
-		; Se chamar alguma fun√ß√£o externa	
+		; Se chamar alguma funÁ„o externa	
         ;IMPORT <func>              ; Permite chamar dentro deste arquivo uma 
-									; fun√ß√£o <func>
+									; funÁ„o <func>
 
 
 ;--------------------------------------------------------------------------------

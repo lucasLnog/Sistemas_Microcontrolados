@@ -153,6 +153,9 @@ Pos_to_char
 	;seleciona os bits de coluna
 	AND R1, R5, #0xF0
 	
+	;garante que inicialmente R0 == 0
+	MOV R0, #0x00
+	
 	;seleciona bits de linha
 	AND R6, R5, #0x0F
 	
