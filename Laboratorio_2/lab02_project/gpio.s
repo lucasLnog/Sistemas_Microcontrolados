@@ -132,11 +132,32 @@ GPIO_Init
 	MOV R5, #0x00
 	MOV R6, #0x01 ;Ativa PJ0
 	BL PORT_Init_Generic
+	BL GPIOJ_Interrupt_Init
 	
 	MOV R5, #0x01
 	STR R5, [R3, #GPIO_PUR_OFF]
 	
-	BL GPIOJ_Interrupt_Init
+	;PORTQ Q0-3 saida
+	LDR R3, =GPIO_PORTQ_AHB
+	MOV R4, #GPIO_PORTQ
+	MOV R5, #0x0F
+	MOV R6, #0x0F
+	BL PORT_Init_Generic
+	
+	;PORTQ A4-7 saida
+	LDR R3, =GPIO_PORTA_AHB
+	MOV R4, #GPIO_PORTA
+	MOV R5, #0xF0
+	MOV R6, #0xF0
+	BL PORT_Init_Generic
+	
+	;PORTP P5 saida
+	LDR R3, =GPIO_PORTP_AHB
+	MOV R4, #GPIO_PORTP
+	MOV R5, #0x20
+	MOV R6, #0x20
+	BL PORT_Init_Generic
+	
 	
 	POP{LR}
 	BX LR
@@ -253,9 +274,12 @@ Write_to_LEDs
 
     LDR R1, =GPIO_PORTA_AHB
     LDR R2, =GPIO_PORTQ_AHB
-    LDR R3, =GPIO_DATA_OFF
-    STR R0, [R1, R3]
-    STR R0, [R2, R3]
+	MOV R3, R0
+	AND R3, #0x0F
+    STR R3, [R2, #GPIO_DATA_OFF]
+	MOV R3, R0
+	AND R3, #0xF0
+    STR R3, [R1, #GPIO_DATA_OFF]
 
 	POP{R1-R3, LR}
 	BX LR

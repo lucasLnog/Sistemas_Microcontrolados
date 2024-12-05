@@ -34,6 +34,7 @@ multipliers SPACE 12
 		EXPORT string_label         [DATA, SIZE=16]
 		EXPORT string_mul           [DATA, SIZE=12]
 		EXPORT current_mult_table   [DATA, SIZE=1]
+		EXPORT multipliers		    [DATA, SIZE=12]
 
 ; -------------------------------------------------------------------------------
 ; Área de Código - Tudo abaixo da diretiva a seguir será armazenado na memória de 
@@ -62,6 +63,7 @@ multipliers SPACE 12
 		IMPORT SysTick_Wait1ms
 		IMPORT Issue_cmd
 		IMPORT Format_strings
+		IMPORT Timer_Init
 
 ; -------------------------------------------------------------------------------
 ; Função main()
@@ -71,6 +73,7 @@ Start
 	BL GPIO_Init
 	BL Display_Init
 	BL Variables_Init
+	BL Timer_Init
 	
 	
 	
@@ -304,6 +307,11 @@ load_zero
 	;Init last_input
 	LDR R0, =last_input
 	MOV R1, #0xFF
+	STRB R1, [R0]
+	
+	;Init current_mult_table
+	LDR R0, =current_mult_table
+	MOV R1, #0x01
 	STRB R1, [R0]
 	
 	POP{R0, R1}

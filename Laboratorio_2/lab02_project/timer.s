@@ -78,6 +78,7 @@ TIMER_INITIAL_COUNT			EQU    7999999
 									
 		EXPORT Timer_Init
 		EXPORT Timer_set_count
+		EXPORT Timer0A_Handler
 									
 		; Se chamar alguma fun��o externa	
         ;IMPORT <func>              ; Permite chamar dentro deste arquivo uma 
@@ -85,6 +86,7 @@ TIMER_INITIAL_COUNT			EQU    7999999
         IMPORT current_mult_table
         IMPORT Write_to_LEDs
         IMPORT Toggle_LEDs_activation
+        IMPORT multipliers
 
 
 ;--------------------------------------------------------------------------------
@@ -172,7 +174,7 @@ Timer_set_count
 ;--------------------------------------------------------------------------------
 ;Timer0A_Handler()
 Timer0A_Handler
-    PUSH {R0-R2, LR}
+    PUSH {R0-R4, LR}
 
     ;ACK interrupt
     LDR R1, =TIMER_TIMER0_GPTMICR_R
@@ -187,17 +189,21 @@ Timer0A_Handler
     BL Timer_set_count
 
     ;Write to LEDs and toggle activation
-    MOV R1, #-1
-    AND R1, #0xFF
+	LDR R3, =multipliers
+	LDRB R0, [R3, R0]
+	SUB R0, #1
+	CMP R0, #-1
+	MOVEQ R0, #9
+    MOV R1, #0xFF
     MOV R2, #8
     SUB R2, R0
     CMP R0, #9
-    LSRLO R1, R0
+    LSRLO R1, R2
     MOV R0, R1
     BL Write_to_LEDs
     BL Toggle_LEDs_activation
 
-    POP {R0-R2, LR} ; retorno da interrupção
+    POP {R0-R4, LR} ; retorno da interrupção
     BX LR
 
 	ALIGN
