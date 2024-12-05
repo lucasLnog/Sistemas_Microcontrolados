@@ -82,6 +82,9 @@ TIMER_INITIAL_COUNT			EQU    7999999
 		; Se chamar alguma função externa	
         ;IMPORT <func>              ; Permite chamar dentro deste arquivo uma 
 									; função <func>
+        IMPORT current_mult_table
+        IMPORT Write_to_LEDs
+        IMPORT Toggle_LEDs_activation
 
 
 ;--------------------------------------------------------------------------------
@@ -155,6 +158,7 @@ WaitTimer
 ;	void
 ;
 Timer_set_count
+    PUSH{R0, R1, LR}
 	LDR R0, =TIMER_TIMER0_GPTMTAIL_R
 	STR R1, [R0]
 	
@@ -162,7 +166,39 @@ Timer_set_count
 	MOV R1, #0x1
 	STR R1, [R0]
 	
+    POP{R0, R1, LR}
 	BX LR
 
+;--------------------------------------------------------------------------------
+;Timer0A_Handler()
+Timer0A_Handler
+    PUSH {R0-R2, LR}
+
+    ;ACK interrupt
+    LDR R1, =TIMER_TIMER0_GPTMICR_R
+    MOV R0, #1
+    STR R0, [R1]
+
+    ;Set timer count to 100ms * current_mult_table
+    LDR R1, =current_mult_table
+    LDRB R0, [R1]
+    LDR R2, =TIMER_INITIAL_COUNT
+    MUL R1, R0, R2
+    BL Timer_set_count
+
+    ;Write to LEDs and toggle activation
+    MOV R1, #-1
+    AND R1, #0xFF
+    MOV R2, #8
+    SUB R2, R0
+    CMP R0, #9
+    LSRLO R1, R0
+    MOV R0, R1
+    BL Write_to_LEDs
+    BL Toggle_LEDs_activation
+
+    POP {R0-R2, LR} ; retorno da interrupção
+    BX LR
+
 	ALIGN
-	END
+    END

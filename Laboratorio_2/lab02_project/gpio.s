@@ -75,7 +75,9 @@ TIMER_INITIAL_COUNT			EQU    7999999
 			                        ; outro arquivo. No caso startup.s
 									
 		EXPORT GPIO_Init
-		EXPORT Timer_set_count
+        EXPORT Toggle_LEDs_activation
+        EXPORT Write_to_LEDs
+
 									
 		; Se chamar alguma fun��o externa	
         ;IMPORT <func>              ; Permite chamar dentro deste arquivo uma 
@@ -175,79 +177,39 @@ wait_port_ready
 	
 	POP{R0, R1, R2}
 	BX LR
-	
+
 ;--------------------------------------------------------------------------------
-;Funcao Timer_Init
-;Par�metros de entrada: Nenhum
-;Par�metros de sa�da: Nenhum
-Timer_Init
-	PUSH {LR}
+;Funcao Write_to_LEDs
+; R0 -> LEDs
+Write_to_LEDs
+	PUSH{R1-R3, LR}
 
-	LDR R0, =SYSCTL_RCGCTIMER_R
-	MOV R1, #2_00000001
-	STR R1, [R0]
-	
-	LDR R0, =SYSCTL_PRTIMER_R
-WaitTimer
-	LDR R1, [R0]
-	CMP R1, #2_00000001
-	BNE WaitTimer
+    LDR R1, =GPIO_PORTA_AHB
+    LDR R2, =GPIO_PORTQ_AHB
+    LDR R3, =GPIO_DATA_OFF
+    STR R0, [R1, R3]
+    STR R0, [R2, R3]
 
-	LDR R0, =TIMER_TIMER0_GPTMCTL_R
-	MOV R1, #0x0
-	STR R1, [R0]
-	
-	LDR R0, =TIMER_TIMER0_GPTMCFG_R
-	MOV R1, #0x00
-	STR R1, [R0]
-	
-	LDR R0, =TIMER_TIMER0_GPTMTAM_R
-	MOV R1, 0x2
-	STR R1, [R0]
-	
-	LDR R0, =TIMER_TIMER0_GPTMTAPR_R
-	MOV R1, 0x0
-	STR R1, [R0]
-	
-	LDR R0, =TIMER_TIMER0_GPTMICR_R
-	MOV R1, #2_0001
-	STR R1, [R0]
-	
-	LDR R0, =TIMER_TIMER0_GPTMIMR_R
-	MOV R1, #2_0001
-	STR R1, [R0]
-	
-	LDR R0, =NVIC_PRI4_R
-	MOV R1, #4
-	LSL R1, R1, #29
-	STR R1, [R0]
-	
-	LDR R0, =NVIC_EN0
-	MOV R1, #1
-	LSL R1, R1, =TIMER_0A_NVIC
-	STR R1, [R0]
-
-	LDR R1, =TIMER_INITIAL_COUNT
-	BL Timer_set_count
-	
-	POP {LR}
+	POP{R1-R3, LR}
 	BX LR
 
 ;--------------------------------------------------------------------------------
-;Funcao TimerSetCount
-;Par�metros de entrada: Recebe como par�metro o valor armazenado no registrador R1.
-;R1 -> Valor da contagem do timer
-;Par�metros de sa�da: Nenhum
-Timer_set_count
-	LDR R0, =TIMER_TIMER0_GPTMTAIL_R
-	STR R1, [R0]
-	
-	LDR R0, =TIMER_TIMER0_GPTMCTL_R
-	MOV R1, #0x1
-	STR R1, [R0]
-	
-	BX LR
+;Funcao Toggle_LEDs_activation
+;No parameters
+Toggle_LEDs_activation
+	PUSH{R0-R3, LR}
 
+    LDR R0, =GPIO_PORTP_AHB
+    LDR R1, =GPIO_DATA_OFF
+    LDR R2, [R0, R1]
+    MOV R3, #1
+    LSL R3, #5
+    EOR R2, R3
+    STR R2, [R0, R1]
+
+	POP{R0-R3, LR}
+	BX LR
+	
 ;--------------------------------------------------------------------------------
     ALIGN                          
     END                            
