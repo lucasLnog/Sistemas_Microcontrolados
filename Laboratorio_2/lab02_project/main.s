@@ -136,7 +136,7 @@ input_loop
 	BL Pos_to_char
 	
 	;verifica se o character pressionado é um numero
-	CMP R0, #'0'
+	CMP R0, #'1'
 	BLO main_loop
 	
 	CMP R0, #'9'
@@ -335,6 +335,12 @@ reset_multipliers
 	CMP R0, R1
 	BLO reset_multipliers
 	
+	;reset cur_mult
+	LDR R0, =current_mult_table
+	MOV R1, #0x01
+	STRB R1, [R0]
+	
+	;reset display
 	MOV R0, #0x01
 	BL Issue_cmd
 	
