@@ -8,7 +8,7 @@
 //motor de passo utilizado: 28BYJ-48
 //2048 steps/rev
 //O driver do motor esta conectado nos pinos PH0-3
-void pfx_step(int16_t steps){
+void pb_step(int16_t steps){
 	//sentido horario
 	if(steps > 0){
 		stepClockWise(steps);
@@ -20,10 +20,10 @@ void pfx_step(int16_t steps){
 }
 
 
-void pfx_stepDegrees(int16_t degrees){
+void pb_stepDegrees(int16_t degrees){
 	//Convert degrees to steps
 	int16_t steps = degrees * 10;
-	pfx_step(steps);
+	pb_step(steps);
 }
 
 void stepClockWise(int16_t steps){
