@@ -12,20 +12,20 @@ void pfx_step(int16_t steps){
 	if(steps > 0){
 		//sentido horario
 		for(uint16_t i = 0; i < steps; i++){
-			uint32_t portp = 0x1;
-			while(portp != 0x10){
-					GPIO_PORTH_AHB_DATA_R = portp;
-					portp = portp << 1;
+			uint32_t data = 0x1;
+			while(data != 0x10){
+					GPIO_PORTH_AHB_DATA_R = data;
+					data = data << 1;
 					//espera...
 			}
 		}
 	} else{
 		//executa passos no sentido anti-horario
 		for(uint16_t i = 0; i < -steps; i++){
-			uint32_t portp = 0x8;
-			while(portp != 0x0){
-					GPIO_PORTH_AHB_DATA_R = portp;
-					portp = portp >> 1;
+			uint32_t data = 0x8;
+			while(data != 0x0){
+					GPIO_PORTH_AHB_DATA_R = data;
+					data = data >> 1;
 				//espera...
 			}
 		}
