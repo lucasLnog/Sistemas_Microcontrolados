@@ -14,9 +14,9 @@ void pfx_step(int16_t steps){
 		for(uint16_t i = 0; i < steps; i++){
 			uint32_t data = 0x1;
 			while(data != 0x10){
-					GPIO_PORTH_AHB_DATA_R = data;
-					data = data << 1;
-					//espera...
+				GPIO_PORTH_AHB_DATA_R = data;
+				data = data << 1;
+				//espera...
 			}
 		}
 	} else{
@@ -24,8 +24,8 @@ void pfx_step(int16_t steps){
 		for(uint16_t i = 0; i < -steps; i++){
 			uint32_t data = 0x8;
 			while(data != 0x0){
-					GPIO_PORTH_AHB_DATA_R = data;
-					data = data >> 1;
+				GPIO_PORTH_AHB_DATA_R = data;
+				data = data >> 1;
 				//espera...
 			}
 		}
