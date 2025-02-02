@@ -11,8 +11,6 @@
 **/Listings/**
 
 #Ignore project files
-*.uvoptx
-*.uvprojx
 *.uvguix.*
 
 #Ignore pdfs
