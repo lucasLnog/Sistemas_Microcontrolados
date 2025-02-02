@@ -7,6 +7,8 @@
 *.iex
 *.htm
 *.map
+**/Objects/**
+**/Listings/**
 
 #Ignore project files
 *.uvoptx
