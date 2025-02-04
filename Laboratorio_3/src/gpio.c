@@ -18,15 +18,22 @@ void GPIO_Init(void)
 {
 	//Inicializa PORT P bits 0-3 como saida
 	PortInitGeneric(
-		GPIO_PORTP_DATA_BITS_R,
+		(uint32_t)GPIO_PORTP_DATA_BITS_R,
 		GPIO_PORTP,
 		0x0F,
 		0x0F
 	);
+	
+	PortInitGeneric(
+		(uint32_t)GPIO_PORTN_DATA_BITS_R,
+		GPIO_PORTN,
+		0x03,
+		0x03
+	);
 }	
 
 void PortInitGeneric(
-	volatile uint32_t *base_address,
+	uint32_t base_address,
 	uint8_t sysctl_port_bit,
 	uint32_t io_map,
 	uint32_t pin_map
@@ -36,21 +43,21 @@ void PortInitGeneric(
 	while((SYSCTL_PRGPIO_R & (1 << sysctl_port_bit)) != (1 << sysctl_port_bit));
 	
 	//Desabilta funcoes analogicas na porta
-	volatile uint32_t* port_amsel_r = (base_address + GPIO_AMSEL_OFF);
+	uint32_t* port_amsel_r = (uint32_t*)(base_address + GPIO_AMSEL_OFF);
 	*port_amsel_r = 0x0;
 	
 	//Desabilita Funcoes alternativas na porta
-	volatile uint32_t* port_afsel_r = (base_address + GPIO_AFSEL_OFF);
-	volatile uint32_t* port_pctl_r = (base_address + GPIO_PCTL_OFF);
+	uint32_t* port_afsel_r = (uint32_t*)(base_address + GPIO_AFSEL_OFF);
+	uint32_t* port_pctl_r = (uint32_t*)(base_address + GPIO_PCTL_OFF);
 	*port_pctl_r = 0x0;
 	*port_afsel_r = 0x0;
 	
 	//Define pinos de entrada e saida
-	volatile uint32_t* port_dir_r = (base_address + GPIO_DIR_OFF);
+	uint32_t* port_dir_r = (uint32_t*)(base_address + GPIO_DIR_OFF);
 	*port_dir_r = io_map;
 	
 	//Habilita funcoes digitais nos pinos
-	volatile uint32_t* port_den_r = (base_address + GPIO_DEN_OFF);
+	uint32_t* port_den_r = (uint32_t*)(base_address + GPIO_DEN_OFF);
 	*port_den_r = pin_map;
 }
 
