@@ -419,6 +419,11 @@
               <FileType>2</FileType>
               <FilePath>.\src\arch\string.s</FilePath>
             </File>
+            <File>
+              <FileName>step_driver.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\step_driver.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -428,6 +433,16 @@
               <FileName>systick.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\include\systick.h</FilePath>
+            </File>
+            <File>
+              <FileName>step_driver.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\include\step_driver.h</FilePath>
+            </File>
+            <File>
+              <FileName>gpio.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\include\gpio.h</FilePath>
             </File>
           </Files>
         </Group>
