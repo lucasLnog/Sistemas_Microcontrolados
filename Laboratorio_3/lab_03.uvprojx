@@ -444,6 +444,16 @@
               <FileType>5</FileType>
               <FilePath>.\include\gpio.h</FilePath>
             </File>
+            <File>
+              <FileName>lcd.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\include\lcd.h</FilePath>
+            </File>
+            <File>
+              <FileName>matrix_kb.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\include\matrix_kb.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
