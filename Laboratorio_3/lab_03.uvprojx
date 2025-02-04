@@ -404,10 +404,32 @@
               <FileType>2</FileType>
               <FilePath>.\src\arch\utils.s</FilePath>
             </File>
+            <File>
+              <FileName>lcd.s</FileName>
+              <FileType>2</FileType>
+              <FilePath>.\src\arch\lcd.s</FilePath>
+            </File>
+            <File>
+              <FileName>matrix_kb.s</FileName>
+              <FileType>2</FileType>
+              <FilePath>.\src\arch\matrix_kb.s</FilePath>
+            </File>
+            <File>
+              <FileName>string.s</FileName>
+              <FileType>2</FileType>
+              <FilePath>.\src\arch\string.s</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
           <GroupName>include</GroupName>
+          <Files>
+            <File>
+              <FileName>systick.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\include\systick.h</FilePath>
+            </File>
+          </Files>
         </Group>
         <Group>
           <GroupName>lib</GroupName>
