@@ -23,7 +23,6 @@ void GPIO_Init(void)
 		0x0F,
 		0x0F
 	);
-	
 	PortInitGeneric(
 		(uint32_t)GPIO_PORTN_DATA_BITS_R,
 		GPIO_PORTN,
