@@ -18,16 +18,22 @@ int main(void)
 	PLL_Init();
 	SysTick_Init();
 	PortInitGeneric(
-		GPIO_PORTP_DATA_BITS_R,
-		GPIO_PORTP,
+		GPIO_PORTH_AHB,
+		GPIO_PORTH,
 		0x0F,
 		0x0F
 	);
+	PortInitGeneric(
+		(uint32_t)GPIO_PORTN_DATA_BITS_R,
+		GPIO_PORTN,
+		0x03,
+		0x03
+	);
 	
-	pb_step(20);
-	while (1)
-	{
-			
+	while (1){
+			pb_step(512);
+			SysTick_Wait1ms(100);
+			GPIO_PORTN_DATA_R ^= 0x03; 
 	}
 }
 

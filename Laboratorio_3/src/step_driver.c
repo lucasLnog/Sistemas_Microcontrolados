@@ -1,9 +1,11 @@
 
-#include "../lib/tm4c1294ncpdt.h"
+#include "../lib//tm4c1294ncpdt.h"
 #include "../include/step_driver.h"
+#include "../include/systick.h"
 
 
 #define ABS(x) (x > 0? x : -x)
+
 
 //motor de passo utilizado: 28BYJ-48
 //2048 steps/rev
@@ -33,12 +35,13 @@ void stepClockWise(int16_t steps){
 			GPIO_PORTH_AHB_DATA_R = data;
 			data = data << 1;
 			//espera...
+			SysTick_Wait1ms(10);
 		}
 	}
 }
 
 void stepAntiClockWise(int16_t steps){
-	for(uint16_t i = 0; i < -steps; i++){
+	for(int16_t i = 0; i > -steps; i++){
 		uint32_t data = 0x8;
 		while(data != 0x0){
 			GPIO_PORTH_AHB_DATA_R = data;
