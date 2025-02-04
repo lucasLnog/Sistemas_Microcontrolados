@@ -51,7 +51,7 @@ GPIO_PUR_OFF				EQU	   0x510
 ; Read_keyboard
 ; 
 ; Retorno:
-; 	R5 ->  linha e coluna da tecla pressionada. Apenas o byte menos significa
+; 	R5/R0 -> linha e coluna da tecla pressionada. Apenas o byte menos significa
 ;		   tivo é utilizado
 ;		   Os quatro bits menos significativos dizem respeito
 ;		   a coluna e os 4 mais significativos a linha.
@@ -137,6 +137,7 @@ finish_read
 	STR R1, [R0, #GPIO_DIR_OFF]
 	
 	POP{R0-R4, R6, LR}
+	MOV R0, R5
 	BX LR
 
 ; -------------------------------------------------------------------------------
