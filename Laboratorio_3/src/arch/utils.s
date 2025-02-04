@@ -52,6 +52,8 @@ SYSCTL_PLLSTAT_LOCK           EQU 0x00000001  ; PLL Lock
 
         AREA    |.text|, CODE, READONLY, ALIGN=2
         THUMB
+		EXPORT SysTick_Wait1us
+		EXPORT SysTick_Wait1ms
         EXPORT  PLL_Init
 
 ;------------PLL_Init------------

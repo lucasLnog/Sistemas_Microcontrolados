@@ -29,6 +29,8 @@ GPIO_DEN_OFF				EQU	   0x51C
 GPIO_PUR_OFF				EQU	   0x510
 	
 
+		IMPORT SysTick_Wait1ms
+		IMPORT SysTick_Wait1us
 ; -------------------------------------------------------------------------------
 ; Área de Dados - Declarações de variáveis
 		AREA  DATA, ALIGN=2
@@ -42,6 +44,7 @@ GPIO_PUR_OFF				EQU	   0x510
 ; -------------------------------------------------------------------------------
 ; Área de Código - Tudo abaixo da diretiva a seguir será armazenado na memória de 
 ;                  código
+
         AREA    |.text|, CODE, READONLY, ALIGN=2
 
 		; Se alguma função do arquivo for chamada em outro arquivo	
@@ -56,8 +59,6 @@ GPIO_PUR_OFF				EQU	   0x510
 		; Se chamar alguma função externa	
         ;IMPORT <func>              ; Permite chamar dentro deste arquivo uma 
 									; função <func>
-		IMPORT SysTick_Wait1ms
-		IMPORT SysTick_Wait1us
 ; -------------------------------------------------------------------------------
 ;Inicializa o display
 Display_Init
