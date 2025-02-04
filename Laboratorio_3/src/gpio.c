@@ -6,35 +6,9 @@
 
 #include <stdint.h>
 #include "../lib/tm4c1294ncpdt.h"
+#include "../include/gpio.h"
 
-  
-#define GPIO_PORTJ  (0x0100) //bit 8
-#define GPIO_PORTN  (0x1000) //bit 12
-#define GPIO_PORTP	(0xD)
-
-//OFFSETS
-#define GPIO_DATA_OFF					   0x3FC 
-#define GPIO_AMSEL_OFF					 0x528
-#define GPIO_PCTL_OFF					   0x52C
-#define GPIO_DIR_OFF					   0x400
-#define GPIO_AFSEL_OFF					 0x420
-#define GPIO_DEN_OFF					   0x51C
-#define GPIO_PUR_OFF					   0x510
-#define GPIO_IS_OFF						   0x404
-#define GPIO_IBE_OFF					   0x408
-#define GPIO_IEV_OFF					   0x40C
-#define GPIO_IM_OFF						   0x410
-#define GPIO_ICR_OFF					   0x41C
-
-//Declarations
-void PortInitGeneric(
-	volatile uint32_t *base_address,
-	uint8_t sysctl_port_bit,
-	uint32_t io_map,
-	uint32_t pin_map
-);
-
-
+ 
 // -------------------------------------------------------------------------------
 // Função GPIO_Init
 // Inicializa os ports J e N
@@ -50,32 +24,6 @@ void GPIO_Init(void)
 		0x0F
 	);
 }	
-
-// -------------------------------------------------------------------------------
-// Função PortJ_Input
-// Lê os valores de entrada do port J
-// Parâmetro de entrada: Não tem
-// Parâmetro de saída: o valor da leitura do port
-uint32_t PortJ_Input(void)
-{
-	return GPIO_PORTJ_AHB_DATA_R;
-}
-
-// -------------------------------------------------------------------------------
-// Função PortN_Output
-// Escreve os valores no port N
-// Parâmetro de entrada: Valor a ser escrito
-// Parâmetro de saída: não tem
-void PortN_Output(uint32_t valor)
-{
-    uint32_t temp;
-    //vamos zerar somente os bits menos significativos
-    //para uma escrita amigável nos bits 0 e 1
-    temp = GPIO_PORTN_DATA_R & 0xFC;
-    //agora vamos fazer o OR com o valor recebido na função
-    temp = temp | valor;
-    GPIO_PORTN_DATA_R = temp; 
-}
 
 void PortInitGeneric(
 	volatile uint32_t *base_address,

@@ -6,31 +6,28 @@
 
 #include <stdint.h>
 #include "../include/systick.h"
-
-void GPIO_Init(void);
-uint32_t PortJ_Input(void);
-void PortN_Output(uint32_t leds);
-void Pisca_leds(void);
+#include "../include/step_driver.h"
+#include "../include/gpio.h"
+#include "../lib/tm4c1294ncpdt.h"
 
 uint8_t string_mul;
 uint8_t string_label;
-
 
 int main(void)
 {
 	PLL_Init();
 	SysTick_Init();
-	GPIO_Init();
+	PortInitGeneric(
+		GPIO_PORTP_DATA_BITS_R,
+		GPIO_PORTP,
+		0x0F,
+		0x0F
+	);
+	
+	pb_step(20);
 	while (1)
 	{
-          
+			
 	}
 }
 
-void Pisca_leds(void)
-{
-	PortN_Output(0x2);
-	SysTick_Wait1ms(250);
-	PortN_Output(0x1);
-	SysTick_Wait1ms(250);
-}
