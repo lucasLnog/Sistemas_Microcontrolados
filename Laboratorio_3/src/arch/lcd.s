@@ -62,7 +62,7 @@ GPIO_PUR_OFF				EQU	   0x510
 ; -------------------------------------------------------------------------------
 ;Inicializa o display
 Display_Init
-	PUSH{LR}
+	PUSH{LR, R0}
 	
 	;espera a conclusao do reset por circuito interno
 	MOV R0, #0xA
@@ -102,7 +102,7 @@ Display_Init
 	MOV R0, #1640
 	BL SysTick_Wait1us
 	
-	POP{LR}
+	POP{LR, R0}
 	BX LR
 
 
@@ -185,7 +185,7 @@ string_loop
 ; 	R0 -> comando
 ;
 Issue_cmd
-    PUSH{LR, R1, R2}
+    PUSH{LR, R1, R2, R3}
 	
 	;escreve comando no barramento de dados
 	LDR R1, =GPIO_PORTK_AHB
@@ -206,7 +206,7 @@ Issue_cmd
 	MOV R2, #0x00
 	STR R2, [R1, #GPIO_DATA_OFF]
 	
-	POP{LR, R1, R2}
+	POP{LR, R1, R2, R3}
 	BX LR
 ; -------------------------------------------------------------------------------
 ; Escreve um dado no display
@@ -220,7 +220,7 @@ Issue_cmd
 ; 	R0 -> dado
 ;
 Issue_data
-    PUSH{LR, R1, R2}
+    PUSH{LR, R1, R2, R3}
 	
 	;escreve comando no barramento de dados
 	LDR R1, =GPIO_PORTK_AHB
@@ -241,7 +241,7 @@ Issue_data
 	MOV R2, #0x01
 	STR R2, [R1, #GPIO_DATA_OFF]
 	
-	POP{LR, R1, R2}
+	POP{LR, R1, R2, R3}
 	BX LR
 
 ; Comece o código aqui <======================================================

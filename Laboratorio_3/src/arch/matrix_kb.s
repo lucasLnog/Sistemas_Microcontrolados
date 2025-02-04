@@ -144,13 +144,14 @@ finish_read
 ; Pos_to_char
 ; 
 ; Parametros:
-;	R5 -> Posicao da tecla pressionada
+;	R0 -> Posicao da tecla pressionada
 ;
 ; Saida:
 ;	R0 -> Character correspondente a tecla pressionada
 
 Pos_to_char
 	PUSH{R1, R6}
+	MOV R5, R0
 	;seleciona os bits de coluna
 	AND R1, R5, #0xF0
 	

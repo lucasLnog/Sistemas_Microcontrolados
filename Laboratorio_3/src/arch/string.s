@@ -45,7 +45,7 @@ MUL_RES			EQU	0x08
 ; Saida:
 ;	Nao ha
 Format_strings
-	PUSH{R3-R6, LR}
+	PUSH{R3-R7, LR}
 	
 	;Insere R0 na label
 	LDR R3, =string_label
@@ -79,7 +79,7 @@ load_lsd
 	MOV R4, #'\0'
 	STRB R4, [R6]
 	
-	POP{R3-R6, LR}
+	POP{R3-R7, LR}
 	BX LR
 
 ; -------------------------------------------------------------------------------
@@ -95,7 +95,7 @@ load_lsd
 ; Saida:
 ;	R5 -> string correspondente
 int_to_string
-	PUSH{R0, R1, R3}
+	PUSH{R0, R1, R3, R4}
 	MOV R5, #0x0
 	
 	;Obtem MSD
@@ -110,7 +110,7 @@ int_to_string
 	ADD R1, #0x030
 	ORR R5, R1
 	
-	POP{R0, R1, R3}
+	POP{R0, R1, R3, R4}
 	BX LR
 
 ; -------------------------------------------------------------------------------
