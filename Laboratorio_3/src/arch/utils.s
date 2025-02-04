@@ -54,6 +54,7 @@ SYSCTL_PLLSTAT_LOCK           EQU 0x00000001  ; PLL Lock
         THUMB
 		EXPORT SysTick_Wait1us
 		EXPORT SysTick_Wait1ms
+		EXPORT SysTick_Init
         EXPORT  PLL_Init
 
 ;------------PLL_Init------------
