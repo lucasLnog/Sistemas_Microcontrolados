@@ -424,6 +424,11 @@
               <FileType>1</FileType>
               <FilePath>.\src\step_driver.c</FilePath>
             </File>
+            <File>
+              <FileName>timer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\timer.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -453,6 +458,11 @@
               <FileName>matrix_kb.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\include\matrix_kb.h</FilePath>
+            </File>
+            <File>
+              <FileName>timer.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\include\timer.h</FilePath>
             </File>
           </Files>
         </Group>
