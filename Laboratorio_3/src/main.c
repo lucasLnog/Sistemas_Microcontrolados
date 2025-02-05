@@ -24,6 +24,7 @@ int main(void)
 	while (1){
 			pb_step(512, 0);
 			waitMs(100);
+			GPIO_PORTN_DATA_R ^= 0x03;
 	}
 }
 
