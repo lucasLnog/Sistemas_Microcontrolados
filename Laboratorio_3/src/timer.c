@@ -19,4 +19,23 @@ void timerInit(){
 	
 }
 
+void waitMs(uint16_t ms){
+	waitUs(1000 * ms);
+}
+
+void waitUs(uint32_t us){
+	uint32_t clocks = us * 80;
+	//Load Register
+	TIMER0_TAILR_R = clocks;
+	
+	//Launch timer
+	TIMER0_CTL_R |= TIMER_CTL_TAEN;
+	
+	//Wait for time to run out
+	while((TIMER0_RIS_R & TIMER_RIS_TATORIS) != TIMER_RIS_TATORIS);
+	
+	//Clear Interrupt and Disable timer
+	TIMER0_ICR_R = TIMER_ICR_TATOCINT;
+	TIMER0_CTL_R &= ~(TIMER_CTL_TAEN);
+}
 
