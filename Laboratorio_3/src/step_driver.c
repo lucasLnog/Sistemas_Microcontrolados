@@ -1,7 +1,7 @@
 
 #include "../lib//tm4c1294ncpdt.h"
 #include "../include/step_driver.h"
-#include "../include/systick.h"
+#include "../include/timer.h"
 
 
 #define ABS(x) (x > 0? x : -x)
@@ -58,7 +58,7 @@ void stepClockWise(int16_t steps, uint8_t half_step){
 		for(uint8_t j = 0; j < seq_len; j++){
 			GPIO_PORTH_AHB_DATA_R = data[j];
 			//espera...
-			SysTick_Wait1ms(5);
+			waitMs(5);
 		}
 	}
 }
@@ -77,7 +77,7 @@ void stepAntiClockWise(int16_t steps, uint8_t half_step){
 		for(uint8_t j = seq_len - 1; j >= 0; j--){
 			GPIO_PORTH_AHB_DATA_R = data[j];
 			//espera...
-			SysTick_Wait1ms(5);
+			waitMs(5);
 		}
 	}
 }

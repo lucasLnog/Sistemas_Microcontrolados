@@ -9,6 +9,7 @@
 #include "../include/step_driver.h"
 #include "../include/gpio.h"
 #include "../lib/tm4c1294ncpdt.h"
+#include "../include/timer.h"
 
 uint8_t string_mul = 0;
 uint8_t string_label = 0;
@@ -16,13 +17,13 @@ uint8_t string_label = 0;
 int main(void)
 {
 	PLL_Init();
+	timerInit();
 	SysTick_Init();
 	GPIO_Init();
 	
 	while (1){
 			pb_step(512, 0);
-			SysTick_Wait1ms(100);
-			GPIO_PORTN_DATA_R ^= 0x03; 
+			waitMs(100);
 	}
 }
 
