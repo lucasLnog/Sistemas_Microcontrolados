@@ -10,16 +10,16 @@
 
  
 // -------------------------------------------------------------------------------
-// Função GPIO_Init
+// Funï¿½ï¿½o GPIO_Init
 // Inicializa os ports J e N
-// Parâmetro de entrada: Não tem
-// Parâmetro de saída: Não tem
+// Parï¿½metro de entrada: Nï¿½o tem
+// Parï¿½metro de saï¿½da: Nï¿½o tem
 void GPIO_Init(void)
 {
 	//Inicializa PORT P bits 0-3 como saida
 	PortInitGeneric(
-		(uint32_t)GPIO_PORTP_DATA_BITS_R,
-		GPIO_PORTP,
+		(uint32_t)GPIO_PORTH_AHB_DATA_BITS_R,
+		GPIO_PORTH,
 		0x0F,
 		0x0F
 	);
