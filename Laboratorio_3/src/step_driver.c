@@ -58,7 +58,7 @@ void stepClockWise(int16_t steps, uint8_t half_step){
 		for(uint8_t j = 0; j < seq_len; j++){
 			GPIO_PORTH_AHB_DATA_R = data[j];
 			//espera...
-			SysTick_Wait1ms(10);
+			SysTick_Wait1ms(5);
 		}
 	}
 }
@@ -77,6 +77,7 @@ void stepAntiClockWise(int16_t steps, uint8_t half_step){
 		for(uint8_t j = seq_len - 1; j >= 0; j--){
 			GPIO_PORTH_AHB_DATA_R = data[j];
 			//espera...
+			SysTick_Wait1ms(5);
 		}
 	}
 }
