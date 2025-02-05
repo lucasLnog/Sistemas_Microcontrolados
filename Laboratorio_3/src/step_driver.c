@@ -66,13 +66,14 @@ void stepClockWise(int16_t steps, uint8_t half_step){
 void stepAntiClockWise(int16_t steps, uint8_t half_step){
 	uint8_t *data = full_step_seq;
 	uint8_t seq_len = 4;
+	steps = -steps;
 	
 	if(half_step){
 		data = half_step_seq;
 		seq_len = 8;
 	}
 	
-	for(int16_t i = 0; i > -steps; i++){
+	for(int16_t i = 0; i < steps; i++){
 		for(uint8_t j = seq_len - 1; j >= 0; j--){
 			GPIO_PORTH_AHB_DATA_R = data[j];
 			//espera...
