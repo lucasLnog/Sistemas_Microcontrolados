@@ -429,6 +429,16 @@
               <FileType>1</FileType>
               <FilePath>.\src\timer.c</FilePath>
             </File>
+            <File>
+              <FileName>globals.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\globals.c</FilePath>
+            </File>
+            <File>
+              <FileName>handler.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\handler.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -463,6 +473,16 @@
               <FileName>timer.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\include\timer.h</FilePath>
+            </File>
+            <File>
+              <FileName>globals.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\include\globals.h</FilePath>
+            </File>
+            <File>
+              <FileName>handler.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\include\handler.h</FilePath>
             </File>
           </Files>
         </Group>
