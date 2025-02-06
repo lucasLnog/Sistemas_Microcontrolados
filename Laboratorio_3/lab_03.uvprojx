@@ -439,6 +439,11 @@
               <FileType>1</FileType>
               <FilePath>.\src\handler.c</FilePath>
             </File>
+            <File>
+              <FileName>utils.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\utils.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -483,6 +488,11 @@
               <FileName>handler.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\include\handler.h</FilePath>
+            </File>
+            <File>
+              <FileName>utils.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\utils.c</FilePath>
             </File>
           </Files>
         </Group>
