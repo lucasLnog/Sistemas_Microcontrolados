@@ -63,7 +63,7 @@ GPIO_PUR_OFF				EQU	   0x510
 ;	um valor convencionado como invalido.
 ;	
 Read_keyboard
-	PUSH{R0-R4, R6, LR}
+	PUSH{R1-R5, R6, R7, LR}
 	;R0 -> Coluna sendo lida
 	;R5 -> Valor de retorno
 	MOV R0, #0x04
@@ -136,8 +136,8 @@ finish_read
 	ORR R1, #0xF0
 	STR R1, [R0, #GPIO_DIR_OFF]
 	
-	POP{R0-R4, R6, LR}
 	MOV R0, R5
+	POP{R1-R5, R6, R7, LR}
 	BX LR
 
 ; -------------------------------------------------------------------------------
