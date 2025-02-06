@@ -68,9 +68,10 @@ void GPIO_Init(void)
 	PortInitGeneric(
 		(uint32_t) GPIO_PORTL_DATA_BITS_R,
 		GPIO_PORTL,
-		0x0F,
+		0x00,
 		0x0F
 	);
+	GPIO_PORTL_PUR_R = 0x0F;
 	
 }	
 
