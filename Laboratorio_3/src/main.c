@@ -10,6 +10,8 @@
 #include "../include/gpio.h"
 #include "../lib/tm4c1294ncpdt.h"
 #include "../include/timer.h"
+#include "../include/utils.h"
+#include "../include/globals.h"
 
 uint8_t string_mul = 0;
 uint8_t string_label = 0;
@@ -20,11 +22,10 @@ int main(void)
 	timerInit();
 	SysTick_Init();
 	GPIO_Init();
-	
 	while (1){
-			pb_step(512, 0);
-			waitMs(100);
-			GPIO_PORTN_DATA_R ^= 0x03;
+        int rotation_amount = readDegsFromKB();
+        step_motor_pos += rotation_amount;
+        pb_stepDegrees(rotation_amount, step_mode);
+        writeRotToDisplay(step_motor_pos);
 	}
 }
-

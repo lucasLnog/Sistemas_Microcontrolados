@@ -4,4 +4,4 @@ extern uint8_t step_mode;
 
 extern uint8_t step_motor_pos;
 
-extern uint8_t turn_count;
+extern const int32_t kb[3][4];

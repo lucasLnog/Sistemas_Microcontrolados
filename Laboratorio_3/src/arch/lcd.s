@@ -55,6 +55,8 @@ GPIO_PUR_OFF				EQU	   0x510
 		EXPORT Display_Init
 		EXPORT Issue_data
 		EXPORT Issue_cmd
+		EXPORT Break_line
+		EXPORT Clear_display
 			
 		; Se chamar alguma função externa	
         ;IMPORT <func>              ; Permite chamar dentro deste arquivo uma 
@@ -242,6 +244,40 @@ Issue_data
 	STR R2, [R1, #GPIO_DATA_OFF]
 	
 	POP{LR, R1, R2, R3}
+	BX LR
+
+; -------------------------------------------------------------------------------
+; Posiciona o cursor na segunda linha
+;
+Break_line
+    PUSH{LR, R0}
+
+	;move cursor para segunda linha
+	MOV R0, #0xC0
+	BL Issue_cmd
+
+	POP{LR, R0}
+	BX LR
+
+; -------------------------------------------------------------------------------
+; Limpa o display
+;
+Clear_display
+    PUSH{LR, R0}
+
+	;reset display
+	MOV R0, #0x01
+	BL Issue_cmd
+	MOV R0, #1640
+	BL SysTick_Wait1us
+	
+	;retorna para a primeira posicao
+	MOV R0, #0x02
+	BL Issue_cmd
+	MOV R0, #1640
+	BL SysTick_Wait1us
+
+	POP{LR, R0}
 	BX LR
 
 ; Comece o código aqui <======================================================
