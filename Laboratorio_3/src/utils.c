@@ -24,21 +24,30 @@ int32_t readDegsFromKB() {
 }
 
 void writeRotToDisplay(int rotation_amount) {
+    int anti_clockwise = 0;
+    if (rotation_amount < 0) {
+        anti_clockwise = 1;
+        rotation_amount = -1*rotation_amount;
+    }
     int turns = (rotation_amount/360) % 100;
     int degrees = rotation_amount%360;
-    char turns_string[] = "Voltas:   , Graus:    ";
-    turns_string[9] = turns%10 + '0';
-    turns_string[8] = turns/10 + '0';
-    turns_string[21] = degrees%10 + '0';
-    turns_string[20] = (degrees/10)%10 + '0';
-    turns_string[19] = degrees/100 + '0';
+    char turns_string[] = "Voltas:    , Graus:     ";
+    turns_string[10] = turns%10 + '0';
+    turns_string[9] = turns/10 + '0';
+    turns_string[23] = degrees%10 + '0';
+    turns_string[22] = (degrees/10)%10 + '0';
+    turns_string[21] = degrees/100 + '0';
+    if (anti_clockwise) {
+        turns_string[8] = '-';
+        turns_string[20] = '-';
+    }
     char speed_string[] = "PC";
     if (step_mode == 1) {
         speed_string[0] = 'M';
         speed_string[1] = 'P';
     }
     Clear_display();
-    Write_to_display(turns_string, 22);
+    Write_to_display(turns_string, 24);
     Break_line();
     Write_to_display(speed_string, 2);
 }
