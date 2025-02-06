@@ -2,7 +2,7 @@
 
 uint8_t step_mode = 0;
 
-uint8_t step_motor_pos;
+int32_t step_motor_pos;
 
 const int32_t kb[3][4] = {{15, 30, 45, -60},
                           {60, 90, 180, -90},
