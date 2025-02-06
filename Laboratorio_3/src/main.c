@@ -12,6 +12,7 @@
 #include "../include/timer.h"
 #include "../include/utils.h"
 #include "../include/globals.h"
+#include "../include/lcd.h"
 
 uint8_t string_mul = 0;
 uint8_t string_label = 0;
@@ -22,10 +23,11 @@ int main(void)
 	timerInit();
 	SysTick_Init();
 	GPIO_Init();
+	Display_Init();
 	while (1){
-        int rotation_amount = readDegsFromKB();
+        int32_t rotation_amount = readDegsFromKB();
         step_motor_pos += rotation_amount;
+				writeRotToDisplay(step_motor_pos);
         pb_stepDegrees(rotation_amount, step_mode);
-        writeRotToDisplay(step_motor_pos);
 	}
 }
