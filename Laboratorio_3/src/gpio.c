@@ -48,6 +48,30 @@ void GPIO_Init(void)
 	GPIO_PORTJ_AHB_PUR_R = 0x03;
 	GPIOJInterruptInit();
 	
+	//Incializa PORTK K0-7 como saida (LCD)
+	PortInitGeneric(
+		(uint32_t) GPIO_PORTK_DATA_BITS_R,
+		GPIO_PORTK,
+		0xFF,
+		0xFF
+	);
+	
+	//Inicializa PORTM M0-2 como saida (LCD) e M4-7 como saida (KB)
+	PortInitGeneric(
+		(uint32_t) GPIO_PORTM_DATA_BITS_R,
+		GPIO_PORTM,
+		0xF7,
+		0xF7
+	);
+	
+	//Inicializa PORTL0-3
+	PortInitGeneric(
+		(uint32_t) GPIO_PORTL_DATA_BITS_R,
+		GPIO_PORTL,
+		0x0F,
+		0x0F
+	);
+	
 }	
 
 void PortInitGeneric(
