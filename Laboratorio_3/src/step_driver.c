@@ -42,7 +42,7 @@ void pb_step(int16_t steps, uint8_t half_step){
 
 void pb_stepDegrees(int16_t degrees, uint8_t half_step){
 	//Convert degrees to steps
-	int16_t steps = degrees * 10;
+	int16_t steps = degrees * 6;
 	pb_step(steps, half_step);
 }
 
@@ -52,14 +52,16 @@ void stepClockWise(int16_t steps, uint8_t half_step){
 	
 	if(half_step){
 		data = half_step_seq;
+		steps = steps << 1;
 		seq_len = 8;
 	}
+	uint8_t j = 0;
 	for(uint16_t i = 0; i < steps; i++){
-		for(uint8_t j = 0; j < seq_len; j++){
 			GPIO_PORTH_AHB_DATA_R = data[j];
+			j++;
+			if(j > seq_len) j = 0;
 			//espera...
 			waitMs(5);
-		}
 	}
 }
 
@@ -70,15 +72,17 @@ void stepAntiClockWise(int16_t steps, uint8_t half_step){
 	
 	if(half_step){
 		data = half_step_seq;
+		steps = steps << 1;
 		seq_len = 8;
 	}
 	
-	for(int16_t i = 0; i < steps; i++){
-		for(uint8_t j = seq_len - 1; j >= 0; j--){
+	int8_t j = seq_len - 1;
+	for(uint16_t i = 0; i < steps; i++){
 			GPIO_PORTH_AHB_DATA_R = data[j];
+			j--;
+			if(j < 0) j = seq_len - 1;
 			//espera...
 			waitMs(5);
-		}
 	}
 }
 
