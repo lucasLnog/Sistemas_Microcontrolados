@@ -10,21 +10,29 @@
 #include "../include/gpio.h"
 #include "../lib/tm4c1294ncpdt.h"
 #include "../include/timer.h"
-#include "../include/utils.h"
 #include "../include/globals.h"
 #include "../include/lcd.h"
+#include "../include/uart.h"
 
-uint8_t string_mul = 0;
-uint8_t string_label = 0;
+char hello [] = "Hello World!\n/0";
 
 int main(void)
 {
 	PLL_Init();
 	timerInit();
 	SysTick_Init();
-	GPIO_Init();
-	Display_Init();
+	//GPIO_Init();
+	UART_Init();
+	//Display_Init();
 	while (1){
-
+		uint8_t sent_count = 0;
+		while(sent_count < 13){
+			//Tx queue is not full
+			if(!(UART0_FR_R & UART_FR_TXFF)){
+				UART0_DR_R = hello[sent_count];
+				sent_count++;
+			}
+		}
+		waitMs(500);
 	}
 }
