@@ -31,6 +31,8 @@ void UART_Init(){
 	//Habilita UART0
 	UART0_CTL_R = UART_CTL_RXE | UART_CTL_TXE | UART_CTL_UARTEN;
 	
+	configUART0Pins();
+	
 }
 
 //Pinos PA0 (RX) e PA1 (TX)
@@ -49,6 +51,5 @@ void configUART0Pins(){
 	GPIO_PORTA_AHB_AFSEL_R |= 0x03;
 	
 	//Habilita funcoes digitais nos pinas PA0 e PA1
-	GPIO_PORTA_AHB_DEN_R |= 0x03;
-	
+	GPIO_PORTA_AHB_DEN_R |= 0x03;	
 }
