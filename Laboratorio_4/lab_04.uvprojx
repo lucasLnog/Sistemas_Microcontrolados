@@ -415,11 +415,6 @@
               <FilePath>.\src\arch\matrix_kb.s</FilePath>
             </File>
             <File>
-              <FileName>string.s</FileName>
-              <FileType>2</FileType>
-              <FilePath>.\src\arch\string.s</FilePath>
-            </File>
-            <File>
               <FileName>step_driver.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\step_driver.c</FilePath>
@@ -440,9 +435,9 @@
               <FilePath>.\src\handler.c</FilePath>
             </File>
             <File>
-              <FileName>utils.c</FileName>
+              <FileName>uart.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\src\utils.c</FilePath>
+              <FilePath>.\src\uart.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -490,9 +485,9 @@
               <FilePath>.\include\handler.h</FilePath>
             </File>
             <File>
-              <FileName>utils.h</FileName>
+              <FileName>uart.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\Laboratorio_3\include\utils.h</FilePath>
+              <FilePath>.\include\uart.h</FilePath>
             </File>
           </Files>
         </Group>
