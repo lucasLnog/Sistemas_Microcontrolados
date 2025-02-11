@@ -39,7 +39,16 @@ void configUART0Pins(){
 	SYSCTL_RCGCGPIO_R |= SYSCTL_RCGCGPIO_R0;
 	while((SYSCTL_PRGPIO_R & SYSCTL_PRGPIO_R0) != SYSCTL_PRGPIO_R0);
 	
-	//Desabilita funcionalidades anal
+	//Desabilita funcionalidades analogicas nos pinos PA0 e PA1
+	GPIO_PORTA_AHB_AMSEL_R &= ~(0x3);
 	
+	//Seleciona as funcoes de UART para PA0 e PA1
+	GPIO_PORTA_AHB_PCTL_R |= 0x11;
+		
+	//Habilita as funcoes alternativas nos pinos PA0 e PA1
+	GPIO_PORTA_AHB_AFSEL_R |= 0x03;
+	
+	//Habilita funcoes digitais nos pinas PA0 e PA1
+	GPIO_PORTA_AHB_DEN_R |= 0x03;
 	
 }
