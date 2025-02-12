@@ -63,4 +63,13 @@ uint32_t send_message(char* buffer, uint32_t size){
 	return sent_count;
 }
 
+uint32_t read_message(char* buffer, uint32_t size){
+	uint32_t read_count = 0;
+	
+	while(read_count < size && !(UART0_FR_R & UART_FR_RXFE)){
+		buffer[read_count] = UART0_DR_R;
+		read_count++;
+	}
+	return read_count;
+}
 
