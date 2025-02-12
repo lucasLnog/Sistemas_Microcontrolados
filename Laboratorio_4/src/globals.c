@@ -1,10 +1,7 @@
 #include "../include/globals.h"
 
-uint8_t step_mode = 0;
+char rx_buffer [50];
 
-int32_t step_motor_pos;
+char tx_buffer[50];
 
-const int32_t kb[3][4] = {{15, 30, 45, -60},
-                          {60, 90, 180, -90},
-                          {-15, -30, -45, -180}};
 	
