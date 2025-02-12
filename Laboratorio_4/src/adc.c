@@ -19,9 +19,49 @@ void adc_pins_init();
 /* ============================= FUNCTION IMPLEMENTATIONS ============================= */
 
 void adc_init(){
-
-	
 	adc_pins_init();
+	
+	//Habilita clock para o ADC0
+	SYSCTL_RCGCADC_R = SYSCTL_RCGCADC_R0;
+	while(!(SYSCTL_PRADC_R & SYSCTL_PRADC_R0));
+	
+	//Garante que o ADC0 esta configurado com
+	//a maior taxa de amostragem possivel
+	ADC0_PC_R = ADC_PC_MCR_FULL;
+	
+	//Configura prioridade dos sequenciadores.
+	//SS3 recebe maior prioridade (0).
+	ADC0_PSSI_R = (
+		  0x00 << ADC_PSSI_SS3
+		| 0x01 << ADC_PSSI_SS2
+		| 0x02 << ADC_PSSI_SS1
+		| 0x03 << ADC_PSSI_SS0
+	);
+	
+	//Garante que os sequenciadores estao desativados
+	//antes de configura-los
+	ADC0_ACTSS_R &= ~(0x0F);
+	
+	//Seleciona os gatilhos dos sequenciadores
+	//do ADC0.
+	ADC0_EMUX_R = ADC_EMUX_EM3_PROCESSOR;
+	
+	//Seleciona AIN9 como entrada para o SS3
+	ADC0_SSEMUX3_R = 0x0;
+	ADC0_SSMUX3_R = 0x09;
+	
+	//Configura o pino como fonte da primeira leitura de SS3
+	//Habilita interrupcoes no fim de uma conversao
+	ADC0_SSCTL3_R = ADC_SSCTL3_END0 | ADC_SSCTL3_IE0;
+	
+	//Habilita Interrupcao a nivel de periferico
+	ADC0_IM_R |= ADC_IM_MASK3;
+	
+	//Habilita SS3
+	ADC0_ACTSS_R |= ADC_ACTSS_ASEN3;
+	
+	//Habilitar interrupcao a nivel de sistema...
+	
 }
 
 
