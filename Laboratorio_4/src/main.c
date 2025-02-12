@@ -1,20 +1,12 @@
-// main.c
-// Desenvolvido para a placa EK-TM4C1294XL
-// Verifica o estado das chaves USR_SW1 e USR_SW2, acende os LEDs 1 e 2 caso estejam pressionadas independentemente
-// Caso as duas chaves estejam pressionadas ao mesmo tempo pisca os LEDs alternadamente a cada 500ms.
-// Prof. Guilherme Peron
-
 #include <stdint.h>
-#include "../include/systick.h"
-#include "../include/step_driver.h"
-#include "../include/gpio.h"
 #include "../lib/tm4c1294ncpdt.h"
+#include "../include/systick.h"
+#include "../include/gpio.h"
 #include "../include/timer.h"
 #include "../include/globals.h"
-#include "../include/lcd.h"
 #include "../include/uart.h"
 
-char hello [] = "Hello World!\n/0";
+char hello [] = "Hello World!\n";
 
 int main(void)
 {
@@ -25,14 +17,11 @@ int main(void)
 	UART_Init();
 	//Display_Init();
 	while (1){
-		uint8_t sent_count = 0;
-		while(sent_count < 13){
-			//Tx queue is not full
-			if(!(UART0_FR_R & UART_FR_TXFF)){
-				UART0_DR_R = hello[sent_count];
-				sent_count++;
-			}
+		uint32_t read_count = 0;
+		while(!read_count ){
+			read_count = read_message(rx_buffer, 50);
 		}
+		send_message(hello, 13);
 		waitMs(500);
 	}
 }
