@@ -1,11 +1,10 @@
-#include<stdint.h>
 #include "../include/uart.h"
 #include "../lib/tm4c1294ncpdt.h"
 
 /* ============================ AUX FUNCTIONS DECLARATIONS ============================ */
 
 
-void configUART0Pins();
+void config_uart0_pins();
 
 /* ============================= FUNCTION IMPLEMENTATIONS ============================= */
 void UART_Init(){
@@ -31,12 +30,12 @@ void UART_Init(){
 	//Habilita UART0
 	UART0_CTL_R = UART_CTL_RXE | UART_CTL_TXE | UART_CTL_UARTEN;
 	
-	configUART0Pins();
+	config_uart0_pins();
 	
 }
 
 //Pinos PA0 (RX) e PA1 (TX)
-void configUART0Pins(){
+void config_uart0_pins(){
 	//habilita Clock no Port A
 	SYSCTL_RCGCGPIO_R |= SYSCTL_RCGCGPIO_R0;
 	while((SYSCTL_PRGPIO_R & SYSCTL_PRGPIO_R0) != SYSCTL_PRGPIO_R0);
@@ -53,3 +52,15 @@ void configUART0Pins(){
 	//Habilita funcoes digitais nos pinas PA0 e PA1
 	GPIO_PORTA_AHB_DEN_R |= 0x03;	
 }
+
+uint32_t send_message(char* buffer, uint32_t size){
+	uint32_t sent_count = 0;
+	
+	while(sent_count < size && !(UART0_FR_R & UART_FR_TXFF)){
+		UART0_DR_R = buffer[sent_count];
+		sent_count++;
+	}
+	return sent_count;
+}
+
+
