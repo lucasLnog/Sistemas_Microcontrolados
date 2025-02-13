@@ -12,6 +12,8 @@
 #define GPIO_PORTL		0xA
 #define GPIO_PORTP	 (0xD)
 #define GPIO_PORTH	 (0x7)
+#define GPIO_PORTF	  0x5 
+#define GPIO_PORTE	  0x04
 
 //PORT BASES
 #define GPIO_PORTA_AHB				     0x40058000
