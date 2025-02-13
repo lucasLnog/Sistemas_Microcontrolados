@@ -19,6 +19,12 @@ void timerInit(){
 	
 }
 
+void waitS(uint16_t s){
+	for(uint16_t i = 0; i < s; i++){
+		waitMs(1000);
+	}
+}
+
 void waitMs(uint16_t ms){
 	waitUs(1000 * ms);
 }
