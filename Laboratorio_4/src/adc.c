@@ -10,6 +10,11 @@
 #define GPIO_PCTL_PMC6 0x18
 #define GPIO_PCTL_PMC7 0x1C
 
+#define ADC_SSPRI_SS0_S 0x00
+#define ADC_SSPRI_SS1_S 0x04
+#define ADC_SSPRI_SS2_S 0x08
+#define ADC_SSPRI_SS3_S 0x0C
+
 /* ============================ AUX FUNCTIONS DECLARATIONS ============================ */
 
 
@@ -30,11 +35,11 @@ void adc_init(){
 	
 	//Configura prioridade dos sequenciadores.
 	//SS3 recebe maior prioridade (0).
-	ADC0_PSSI_R = (
-		  0x00 << ADC_PSSI_SS3
-		| 0x01 << ADC_PSSI_SS2
-		| 0x02 << ADC_PSSI_SS1
-		| 0x03 << ADC_PSSI_SS0
+	ADC0_SSPRI_R = (
+		  0x00 << ADC_SSPRI_SS3_S
+		| 0x01 << ADC_SSPRI_SS2_S
+		| 0x02 << ADC_SSPRI_SS1_S
+		| 0x03 << ADC_SSPRI_SS0_S
 	);
 	
 	//Garante que os sequenciadores estao desativados
@@ -102,6 +107,8 @@ uint32_t read_adc_blocking(){
 	ADC0_PSSI_R = ADC_PSSI_SS3;
 	while(!(ADC0_RIS_R & ADC_RIS_INR3));
 	
+	ADC0_ISC_R = ADC_ISC_IN3;
+		
 	return ADC0_SSFIFO3_R;
 }
 
