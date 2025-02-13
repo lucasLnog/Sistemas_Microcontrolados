@@ -1,4 +1,3 @@
-#include<stdint.h>
 #include "../include/adc.h"
 #include "../lib/tm4c1294ncpdt.h"
 
@@ -97,6 +96,13 @@ void adc_pins_init(){
 
 void trigger_adc_read(){
 	ADC0_PSSI_R = ADC_PSSI_SS3;
+}
+
+uint32_t read_adc_blocking(){
+	ADC0_PSSI_R = ADC_PSSI_SS3;
+	while(!(ADC0_RIS_R & ADC_RIS_INR3));
+	
+	return ADC0_SSFIFO3_R;
 }
 
 
