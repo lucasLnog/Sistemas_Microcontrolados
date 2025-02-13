@@ -57,6 +57,9 @@ void adc_init(){
 	//Define prioridade para a interrupcao (4)
 	NVIC_PRI4_R |= (0x04 << NVIC_PRI4_INT17_S);
 	
+	//Limpa interrupcao
+	ADC0_ISC_R = ADC_ISC_IN3;
+	
 	//Habilita Interrupcao a nivel de periferico
 	ADC0_IM_R |= ADC_IM_MASK3;
 	
@@ -89,4 +92,32 @@ void adc_pins_init(){
 	//Garante que a funcao analogica em GPIO_PCTL esteja
 	//selecionada para PE4
 	GPIO_PORTE_AHB_PCTL_R &= ~(0x0F << GPIO_PCTL_PMC4);
+}
+
+
+void trigger_adc_read(){
+	ADC0_PSSI_R = ADC_PSSI_SS3;
+}
+
+
+void adc_enable_int(){
+	//Limpa interrupcao
+	ADC0_ISC_R = ADC_ISC_IN3;
+	
+	//Habilita Interrupcao a nivel de periferico
+	ADC0_IM_R |= ADC_IM_MASK3;
+	
+	//Habilitar interrupcao a nivel de sistema...
+	NVIC_EN0_R |= (1 << 17);
+}
+
+void adc_disable_int(){
+	//Limpa interrupcao
+	ADC0_ISC_R = ADC_ISC_IN3;
+	
+	//Habilita Interrupcao a nivel de periferico
+	ADC0_IM_R &= ~ADC_IM_MASK3;
+	
+	//Habilitar interrupcao a nivel de sistema...
+	NVIC_EN0_R &= ~(1 << 17);
 }
