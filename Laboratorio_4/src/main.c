@@ -8,6 +8,7 @@
 #include "../include/state_machine.h"
 #include "../include/adc.h"
 #include "../include/app_utils.h"
+#include "../include/dc_motor.h"
 
 
 
@@ -36,7 +37,7 @@ int main(void)
                 new_speed = get_motor_speed();
             }
             if (new_direction == -1) {
-                new_direction = get_motor_direction();
+                new_direction = get_motor_dir();
             }
         }
         set_motor_speed(new_speed, new_direction);

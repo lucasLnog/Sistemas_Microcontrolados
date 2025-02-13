@@ -2,6 +2,7 @@
 #include "../include/adc.h"
 #include "../include/globals.h"
 #include "../include/uart.h"
+#include "../include/dc_motor.h"
 
 void speed_read_potentiometer(int32_t *new_speed, int8_t *new_direction) {
     uint32_t adc_value = read_adc_blocking();
@@ -23,8 +24,8 @@ void print_state_messsage() {
     uint32_t message_len;
     char* message;
     uint32_t current_speed = get_motor_speed();
-    current_speed = (float)(current_speed)/20.480
-    uint32_t current_direction = get_motor_direction();
+    current_speed = (float)(current_speed)/20.480;
+    uint32_t current_direction = get_motor_dir();
     switch (state) {
         case Initial:
             message = "Motor parado, pressione * para iniciar\n";
