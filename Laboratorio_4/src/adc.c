@@ -54,13 +54,18 @@ void adc_init(){
 	//Habilita interrupcoes no fim de uma conversao
 	ADC0_SSCTL3_R = ADC_SSCTL3_END0 | ADC_SSCTL3_IE0;
 	
+	//Define prioridade para a interrupcao (4)
+	NVIC_PRI4_R |= (0x04 << NVIC_PRI4_INT17_S);
+	
 	//Habilita Interrupcao a nivel de periferico
 	ADC0_IM_R |= ADC_IM_MASK3;
+	
+	//Habilitar interrupcao a nivel de sistema...
+	NVIC_EN0_R |= (1 << 17);
 	
 	//Habilita SS3
 	ADC0_ACTSS_R |= ADC_ACTSS_ASEN3;
 	
-	//Habilitar interrupcao a nivel de sistema...
 	
 }
 
