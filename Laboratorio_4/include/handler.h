@@ -1,6 +1,2 @@
 
-void GPIOPortJ_Handler();
-
-void handlePortJPin0();
-
-void handlePortJPin1();
+void ADC0Seq3_Handler();

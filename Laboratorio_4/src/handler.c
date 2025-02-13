@@ -4,16 +4,7 @@
 #include "../lib/tm4c1294ncpdt.h"
 
 
-void GPIOPortJ_Handler(){
-	//Verifica quais interrupcoes foram acionadas (tratando todas)
-	if(GPIO_PORTJ_AHB_MIS_R & 0x01){
-		//Altera modo de passo
-	}
-	if(GPIO_PORTJ_AHB_MIS_R & 0x02){
-		//Reseta posicao e contagem de voltas
-		//turn_count = 0x0;
-	}
-	
-	//Limpa Interrupcoes
-	GPIO_PORTJ_AHB_ICR_R = 0x03;
+void ADC0Seq3_Handler(){
+	adc_reading = ADC0_SSFIFO3_R;
 }
+
