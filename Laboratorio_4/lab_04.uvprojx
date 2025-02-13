@@ -434,6 +434,11 @@
               <FileType>1</FileType>
               <FilePath>.\src\adc.c</FilePath>
             </File>
+            <File>
+              <FileName>dc_motor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\dc_motor.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -478,6 +483,11 @@
               <FileName>adc.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\include\adc.h</FilePath>
+            </File>
+            <File>
+              <FileName>dc_motor.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\include\dc_motor.h</FilePath>
             </File>
           </Files>
         </Group>
