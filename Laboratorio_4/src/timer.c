@@ -5,8 +5,8 @@
 // 32 bits one-shot mode
 void timerInit(){
 	//Habilita clock no Timer0
-	SYSCTL_RCGCTIMER_R = SYSCTL_RCGCTIMER_R0;
-	while(SYSCTL_PRTIMER_R != SYSCTL_PRI2C_R0);
+	SYSCTL_RCGCTIMER_R |= SYSCTL_RCGCTIMER_R0;
+	while(!(SYSCTL_PRTIMER_R & SYSCTL_PRTIMER_R0));
 	
 	//Assegura que o Timer 0 esta desabilitado
 	TIMER0_CTL_R &= ~(TIMER_CTL_TAEN);
