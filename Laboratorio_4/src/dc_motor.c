@@ -10,6 +10,7 @@ void motor_pins_init();
 void pwm_init();
 void dc_motor_timer_init();
 void pwm_gen_init();
+void pwm_gen_pins_init();
 
 /* ============================= FUNCTION IMPLEMENTATIONS ============================= */
 
@@ -41,7 +42,7 @@ void motor_pins_init(){
 
 
 void pwm_init(){
-
+    dc_motor_timer_init();
 }
 
 //inicializa Timer 1A para o pwm
@@ -53,21 +54,24 @@ void dc_motor_timer_init(){
     //desabilita timer 1A
     TIMER1_CTL_R &= ~TIMER_CTL_TAEN;
 
-    // modo de 16 bits
-    TIMER1_CFG_R = 0x04;
+    // modo de 32 bits
+    TIMER1_CFG_R = 0x00;
 
-    //periodico, pwm e sem captura
-    TIMER1_TAMR_R = TIMER_TAMR_TAMR_PERIOD | TIMER_TAMR_TAAMS;
+    //configura eventos em ambas as bordas
+    // TIMER1_CTL_R |= TIMER_CTL_TAEVENT_POS;
+
+    //periodico
+    TIMER1_TAMR_R = TIMER_TAMR_TAMR_PERIOD;
 
     //carrega prescaler
     // T = 1ms & clk = 80MHz => 80_000 ticks
     //prescaler = 2, ILR = 40_000
-    TIMER1_TAPR_R = 2;
-    TIMER1_TAILR_R = 40000;
-    TIMER1_TAMATCHR_R = 0;
+    TIMER1_TAILR_R = 80000000;
+    TIMER1_TAMATCHR_R = 40000000;
 
     //Habilita Interrupcoes
-    TIMER1_TAMR_R |= TIMER_TAMR_TAPWMIE;
+    TIMER1_TAMR_R |= TIMER_TAMR_TAMIE;
+    TIMER1_IMR_R = TIMER_IMR_TATOIM | TIMER_IMR_TAMIM;
     NVIC_EN0_R |= (1 << 21);
 
     //Habilita timer 1A
@@ -76,5 +80,39 @@ void dc_motor_timer_init(){
 
 // Inicializa o gerador de pwm 0 com f = 1kHz (T = 1ms)
 void pwm_gen_init(){
+    SYSCTL_RCGCPWM_R = SYSCTL_RCGCPWM_R0;
+    while(!(SYSCTL_PRPWM_R));
+
+    pwm_gen_pins_init();
+
+    //clk = 40MHz
+    PWM0_CC_R = PWM_CC_USEPWM | PWM_CC_PWMDIV_2;
+
+    //Setup
+    PWM0_CTL_R = 0x0;
+    PWM0_0_GENA_R = 0x08C;
+    PWM0_0_GENB_R = 0x80C;
+
+    //Carrega LR com periodo
+    PWM0_0_LOAD_R = 40000 - 1;
+
 
 }
+
+void pwm_gen_pins_init(){
+    //Habilita clock no port F se nao estiver habilitado
+    if(!(SYSCTL_PRGPIO_R & SYSCTL_PRGPIO_R5)){
+        SYSCTL_RCGCGPIO_R |= SYSCTL_RCGCGPIO_R5;
+        while(!(SYSCTL_PRGPIO_R & SYSCTL_PRGPIO_R5));
+    }
+
+    //Desabilita funcoes analogicas em PF0 e PF1
+    GPIO_PORTF_AHB_AMSEL_R &= ~(0x03);
+
+    //Seleciona funcao de PWM0
+    GPIO_PORTF_AHB_PCTL_R |= (0x06 | (0x06 << 4));
+    GPIO_PORTF_AHB_AFSEL_R |= 0x03;
+    
+    GPIO_PORTF_AHB_DEN_R |= 0x03;
+}
+
