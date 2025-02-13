@@ -1,7 +1,16 @@
-#include <stdint.h>
 #include "../lib/tm4c1294ncpdt.h"
 #include "../include/dc_motor.h"
 #include "../include/gpio.h"
+#include "../include/timer.h"
+
+#define PWM_T 80000
+#define PWM_T_DIV 800
+#define MAX_SPEED_DIV 21
+
+/* ============================== LOCAL GLOBAL VARIABLES ============================== */
+
+uint16_t global_speed = 0;
+uint8_t global_dir = 0;
 
 /* ============================ AUX FUNCTIONS DECLARATIONS ============================ */
 
@@ -11,6 +20,8 @@ void pwm_init();
 void dc_motor_timer_init();
 void pwm_gen_init();
 void pwm_gen_pins_init();
+void set_duty_cycle(uint8_t duty);
+uint8_t speed_to_duty(uint16_t speed);
 
 /* ============================= FUNCTION IMPLEMENTATIONS ============================= */
 
@@ -40,6 +51,32 @@ void motor_pins_init(){
     GPIO_PORTE_AHB_DATA_R &= ~(0x03);
 }
 
+void set_motor_speed(uint16_t speed, uint8_t dir){
+    if(speed > 2048) speed = 2048;
+    if(global_dir != dir){
+        uint8_t duty_speed = speed_to_duty(global_speed);
+        for(int16_t i = duty_speed - 1; i >= 0; i -= 1){
+            set_duty_cycle(i);
+            waitMs(1);
+        }
+    }
+		global_dir = dir;
+    uint8_t duty_speed = speed_to_duty(speed);
+    for(int16_t i = 1; i <= duty_speed; i += 1){
+        set_duty_cycle(i);
+        waitMs(1);
+    }
+    global_speed = speed;
+}
+
+uint16_t get_motor_speed(){
+    return global_speed;
+}
+
+uint8_t get_motor_dir(){
+    return global_dir;
+}
+
 
 void pwm_init(){
     dc_motor_timer_init();
@@ -66,8 +103,8 @@ void dc_motor_timer_init(){
     //carrega prescaler
     // T = 1ms & clk = 80MHz => 80_000 ticks
     //prescaler = 2, ILR = 40_000
-    TIMER1_TAILR_R = 80000000;
-    TIMER1_TAMATCHR_R = 40000000;
+    TIMER1_TAILR_R = PWM_T;
+    TIMER1_TAMATCHR_R = 0;
 
     //Habilita Interrupcoes
     TIMER1_TAMR_R |= TIMER_TAMR_TAMIE;
@@ -114,5 +151,14 @@ void pwm_gen_pins_init(){
     GPIO_PORTF_AHB_AFSEL_R |= 0x03;
     
     GPIO_PORTF_AHB_DEN_R |= 0x03;
+}
+
+void set_duty_cycle(uint8_t duty){
+    if(duty > 100) duty = 100;
+    TIMER1_TAMATCHR_R = duty * PWM_T_DIV;
+}
+
+uint8_t speed_to_duty(uint16_t speed){
+    return speed/MAX_SPEED_DIV;
 }
 
