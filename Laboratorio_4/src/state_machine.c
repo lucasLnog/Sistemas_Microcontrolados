@@ -20,7 +20,21 @@ void exec_potctl_state();
 
 /* ============================= FUNCTION IMPLEMENTATIONS ============================= */
 
-void exec_state();
+void exec_state(){
+	switch(cur_state){
+		case STARTUP:
+			exec_startup_state();
+			break;
+		case CLI_CTL:
+			exec_clictl_state();
+			break;
+		case POT_CTL:
+			exec_potctl_state();
+			break;
+		default:
+			exec_startup_state();
+	}
+}
 
 /* =========================== AUX FUNCTIONS IMPLEMENTATIONS ========================== */
 
