@@ -56,9 +56,12 @@ void config_uart0_pins(){
 uint32_t send_message(char* buffer, uint32_t size){
 	uint32_t sent_count = 0;
 	
-	while(sent_count < size && !(UART0_FR_R & UART_FR_TXFF)){
-		UART0_DR_R = buffer[sent_count];
-		sent_count++;
+	// && !(UART0_FR_R & UART_FR_TXFF)
+	while(sent_count < size){
+		if(!(UART0_FR_R & UART_FR_TXFF)){
+			UART0_DR_R = buffer[sent_count];
+			sent_count++;
+		}
 	}
 	return sent_count;
 }
