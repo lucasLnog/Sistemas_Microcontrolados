@@ -87,17 +87,21 @@ char exec_clictl_state(){
 	while(rx_buffer[0] != 'h' && rx_buffer[0] != 'a'){
 		read_message(rx_buffer, 5);
 	}
+
+	uint8_t dir = rx_buffer[0] == 'a'? 1 : 0;
 	
 	send_message(cli_sel_speed_str, cli_sel_speed_len);
 	while(rx_buffer[0] < '0' || rx_buffer[0] > '9'){
 		read_message(rx_buffer, 5);
 	}
+	uint16_t speed = (uint16_t)(rx_buffer[0] - 0x30) * 10;
+
+	set_motor_speed(speed, dir);
 	
 	speed_timer_en();
 	while(1){
 		uint32_t read_count = read_message(rx_buffer, 5);
 		if(read_count){
-			
 			if(rx_buffer[0] >= '0' && rx_buffer[0] <= '9'){
 				uint16_t speed = (uint16_t)(rx_buffer[0] - 0x30) * 10;
 				if(speed == 0){
