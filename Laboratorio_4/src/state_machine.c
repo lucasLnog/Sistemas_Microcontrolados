@@ -5,6 +5,9 @@
 #include "../include/timer.h"
 #include "../include/globals.h"
 #include "../include/adc.h"
+#include "../include/speed_timer.h"
+
+#define MAX_SPEED_DIV 21
 
 /* ========================== GLOBAL VARIABLES DECLARATIONS =========================== */
 
@@ -33,6 +36,8 @@ char exec_potctl_state();
 
 void switch_state(char input);
 
+uint8_t speed_to_duty(uint16_t speed);
+
 /* ============================= FUNCTION IMPLEMENTATIONS ============================= */
 
 void exec_machine(){
@@ -59,6 +64,7 @@ char exec_state(){
 
 char exec_startup_state(){
 	set_motor_speed(0, 0);
+	speed_timer_dis();
 	
 	send_message(startup_str, startup_str_len);
 	while(1){
@@ -87,19 +93,24 @@ char exec_clictl_state(){
 		read_message(rx_buffer, 5);
 	}
 	
-	char set_speed_str [] = "Velocidade:  \n\r";
-	uint32_t set_speed_len = sizeof(set_speed_str)/sizeof(char);
-	
-	set_speed_str[set_speed_len - 4] = rx_buffer[0];
-	send_message(set_speed_str, set_speed_len);
-	
+	speed_timer_en();
 	while(1){
 		uint32_t read_count = read_message(rx_buffer, 5);
 		if(read_count){
+			
 			if(rx_buffer[0] >= '0' && rx_buffer[0] <= '9'){
-				//speed logic
-				set_speed_str[set_speed_len - 4] = rx_buffer[0];
-				send_message(set_speed_str, set_speed_len);
+				uint16_t speed = (uint16_t)(rx_buffer[0] - 0x30) * 10;
+				if(speed == 0){
+					set_motor_speed(100, get_motor_dir());
+				} else{
+					set_motor_speed(speed, get_motor_dir());
+				}
+			}
+			else if(rx_buffer[0] == 'h' && get_motor_dir() != 0){
+				set_motor_speed(get_motor_speed(), 0);
+			}
+			else if(rx_buffer[0] == 'a' && get_motor_dir() != 1){
+				set_motor_speed(get_motor_speed(), 1);
 			}
 			else if(rx_buffer[0] == 's'){
 				return 's';
@@ -111,8 +122,7 @@ char exec_clictl_state(){
 
 char exec_potctl_state(){
 	uint32_t count = 0;
-	char clockwise_str [] = "CLOCKWISE\n\r";
-	char anti_clockwise_str [] = "ANTI-CLOCKWISE\n\r";
+	speed_timer_en();
 	while(1){
 		uint32_t read_count = read_message(rx_buffer, 5);
 		if(read_count && rx_buffer[0] == 's'){
@@ -122,18 +132,10 @@ char exec_potctl_state(){
 			uint32_t pot_read = read_adc_blocking();
 
 			if(pot_read > 2048){
-				send_message(anti_clockwise_str, sizeof(anti_clockwise_str)/sizeof(char));
-				set_motor_speed(pot_read - 2048, 1);
+				set_motor_speed(speed_to_duty(pot_read - 2048), 1);
 			} else{
-				send_message(clockwise_str, sizeof(clockwise_str)/sizeof(char));
-				set_motor_speed(pot_read, 0);
+				set_motor_speed(speed_to_duty(pot_read), 0);
 			}
-
-			for(uint8_t i = 0; i < 4; i++){
-				adc_read_str[adc_read_len - (i + 4)] = (char)((pot_read % 10) + 0x30);
-				pot_read /= 10;
-			}
-			send_message(adc_read_str, adc_read_len);
 			count = 0;
 		}
 		count++;
@@ -154,4 +156,8 @@ void switch_state(char read_char){
 		default:
 			cur_state = STARTUP;
 	}
+}
+
+uint8_t speed_to_duty(uint16_t speed){
+    return speed/MAX_SPEED_DIV;
 }
