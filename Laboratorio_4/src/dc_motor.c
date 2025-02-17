@@ -56,25 +56,25 @@ void set_motor_speed(uint16_t speed, uint8_t dir){
     if(global_dir != dir){
         for(int16_t i = speed - 1; i >= 0; i -= 1){
             set_duty_cycle(i);
-            waitMs(1);
+            waitMs(5);
         }
 
         global_dir = dir;
         for(int16_t i = 1; i <= speed; i += 1){
             set_duty_cycle(i);
-            waitMs(1);
+            waitMs(5);
         }
     } else{
         if(speed > global_speed){
             for(int16_t i = global_speed; i <= speed; i += 1){
                 set_duty_cycle(i);
-                waitMs(1);
+                waitMs(5);
             }
         }
         else{
             for(int16_t i = global_speed; i >= speed; i -= 1){
                 set_duty_cycle(i);
-                waitMs(1);
+                waitMs(5);
             }
         }
     }
