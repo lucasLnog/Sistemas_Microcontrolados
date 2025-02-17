@@ -8,6 +8,7 @@
 #include "../include/state_machine.h"
 #include "../include/adc.h"
 #include "../include/dc_motor.h"
+#include "../include/speed_timer.h"
 
 char hello [] = "Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...\n\r";
 
@@ -15,6 +16,7 @@ int main(void)
 {
 	PLL_Init();
 	timerInit();
+	speed_timer_init();
 	SysTick_Init();
 	//GPIO_Init();
 	UART_Init();
