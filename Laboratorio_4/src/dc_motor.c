@@ -51,16 +51,32 @@ void motor_pins_init(){
 
 void set_motor_speed(uint16_t speed, uint8_t dir){
     if(speed > 100) speed = 100;
+    if(speed == global_speed && dir == global_dir) return;
+
     if(global_dir != dir){
         for(int16_t i = speed - 1; i >= 0; i -= 1){
             set_duty_cycle(i);
             waitMs(1);
         }
-    }
-		global_dir = dir;
-    for(int16_t i = 1; i <= speed; i += 1){
-        set_duty_cycle(i);
-        waitMs(1);
+
+        global_dir = dir;
+        for(int16_t i = 1; i <= speed; i += 1){
+            set_duty_cycle(i);
+            waitMs(1);
+        }
+    } else{
+        if(speed > global_speed){
+            for(int16_t i = global_speed; i <= speed; i += 1){
+                set_duty_cycle(i);
+                waitMs(1);
+            }
+        }
+        else{
+            for(int16_t i = global_speed; i >= speed; i -= 1){
+                set_duty_cycle(i);
+                waitMs(1);
+            }
+        }
     }
     global_speed = speed;
 }
@@ -150,7 +166,7 @@ void pwm_gen_pins_init(){
 }
 
 void set_duty_cycle(uint8_t duty){
-    if(duty > 100) duty = 100;
+    if(duty >= 100) duty = 99;
     TIMER1_TAMATCHR_R = duty * PWM_T_DIV;
 }
 
