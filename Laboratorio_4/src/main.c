@@ -5,8 +5,11 @@
 #include "../include/timer.h"
 #include "../include/globals.h"
 #include "../include/uart.h"
+#include "../include/state_machine.h"
+#include "../include/adc.h"
+#include "../include/dc_motor.h"
 
-char hello [] = "Hello World!\n";
+char hello [] = "Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...\n\r";
 
 int main(void)
 {
@@ -15,13 +18,10 @@ int main(void)
 	SysTick_Init();
 	//GPIO_Init();
 	UART_Init();
-	//Display_Init();
-	while (1){
-		uint32_t read_count = 0;
-		while(!read_count ){
-			read_count = read_message(rx_buffer, 50);
-		}
-		send_message(hello, 13);
-		waitMs(500);
-	}
+	adc_init();
+	adc_disable_int();
+	dc_motor_init();
+	
+	waitMs(1);
+	exec_machine();
 }
