@@ -8,6 +8,7 @@
 #include "../include/speed_timer.h"
 
 #define MAX_SPEED_DIV 21
+#define ABS(x) x > 0? x : -x
 
 /* ========================== GLOBAL VARIABLES DECLARATIONS =========================== */
 
@@ -105,7 +106,7 @@ char exec_clictl_state(){
 			if(rx_buffer[0] >= '0' && rx_buffer[0] <= '9'){
 				uint16_t speed = (uint16_t)(rx_buffer[0] - 0x30) * 10;
 				if(speed == 0){
-					set_motor_speed(100, get_motor_dir());
+					set_motor_speed(99, get_motor_dir());
 				} else{
 					set_motor_speed(speed, get_motor_dir());
 				}
@@ -134,11 +135,14 @@ char exec_potctl_state(){
 		}
 		if(count > 500){
 			uint32_t pot_read = read_adc_blocking();
-
-			if(pot_read > 2048){
-				set_motor_speed(speed_to_duty(pot_read - 2048), 1);
-			} else{
-				set_motor_speed(speed_to_duty(pot_read), 0);
+			uint8_t new_speed = speed_to_duty(pot_read > 2048? pot_read - 2048 : pot_read);
+			uint8_t cur_speed = get_motor_speed();
+			if(ABS(new_speed - cur_speed) > 5){
+				if(pot_read > 2048){
+					set_motor_speed(new_speed, 1);
+				} else{
+					set_motor_speed(new_speed, 0);
+				}
 			}
 			count = 0;
 		}
