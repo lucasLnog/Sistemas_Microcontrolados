@@ -5,7 +5,6 @@
 
 #define PWM_T 80000
 #define PWM_T_DIV 800
-#define MAX_SPEED_DIV 21
 
 /* ============================== LOCAL GLOBAL VARIABLES ============================== */
 
@@ -21,7 +20,6 @@ void dc_motor_timer_init();
 void pwm_gen_init();
 void pwm_gen_pins_init();
 void set_duty_cycle(uint8_t duty);
-uint8_t speed_to_duty(uint16_t speed);
 
 /* ============================= FUNCTION IMPLEMENTATIONS ============================= */
 
@@ -52,17 +50,15 @@ void motor_pins_init(){
 }
 
 void set_motor_speed(uint16_t speed, uint8_t dir){
-    if(speed > 2048) speed = 2048;
+    if(speed > 100) speed = 100;
     if(global_dir != dir){
-        uint8_t duty_speed = speed_to_duty(global_speed);
-        for(int16_t i = duty_speed - 1; i >= 0; i -= 1){
+        for(int16_t i = speed - 1; i >= 0; i -= 1){
             set_duty_cycle(i);
             waitMs(1);
         }
     }
 		global_dir = dir;
-    uint8_t duty_speed = speed_to_duty(speed);
-    for(int16_t i = 1; i <= duty_speed; i += 1){
+    for(int16_t i = 1; i <= speed; i += 1){
         set_duty_cycle(i);
         waitMs(1);
     }
@@ -156,9 +152,5 @@ void pwm_gen_pins_init(){
 void set_duty_cycle(uint8_t duty){
     if(duty > 100) duty = 100;
     TIMER1_TAMATCHR_R = duty * PWM_T_DIV;
-}
-
-uint8_t speed_to_duty(uint16_t speed){
-    return speed/MAX_SPEED_DIV;
 }
 

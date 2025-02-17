@@ -5,7 +5,8 @@
 #include "../include/uart.h"
 #include "../lib/tm4c1294ncpdt.h"
 
-char speed_str [] = "Velocidade: 000\n\r";
+char speed_str [] = "Velocidade: 000 XX\n\r";
+
 uint32_t speed_str_len = sizeof(speed_str)/sizeof(char);
 
 void ADC0Seq3_Handler(){
@@ -29,8 +30,15 @@ void Timer1A_Handler(){
 void Timer2A_Handler(){
 	uint16_t speed = get_motor_speed();
 	for(uint8_t i = 0; i < 3; i++){
-		speed_str[speed_str_len - (i + 4)] = (char)(speed % 10 + 0x30);
+		speed_str[speed_str_len - (i + 7)] = (char)(speed % 10 + 0x30);
 		speed /= 10;
+	}
+	if(get_motor_dir() == 0){
+		speed_str[speed_str_len - 5] = 'H';
+		speed_str[speed_str_len - 4] = ' ';
+	} else{
+		speed_str[speed_str_len - 5] = 'A';
+		speed_str[speed_str_len - 4] = 'H';
 	}
 	send_message(speed_str, speed_str_len);
 	TIMER2_ICR_R = TIMER_ICR_TATOCINT;
