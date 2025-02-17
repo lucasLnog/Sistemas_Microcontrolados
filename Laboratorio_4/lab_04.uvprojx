@@ -439,6 +439,16 @@
               <FileType>1</FileType>
               <FilePath>.\src\dc_motor.c</FilePath>
             </File>
+            <File>
+              <FileName>state_machine.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\state_machine.c</FilePath>
+            </File>
+            <File>
+              <FileName>speed_timer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\speed_timer.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -488,6 +498,16 @@
               <FileName>dc_motor.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\include\dc_motor.h</FilePath>
+            </File>
+            <File>
+              <FileName>state_machine.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\include\state_machine.h</FilePath>
+            </File>
+            <File>
+              <FileName>speed_timer.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\include\speed_timer.h</FilePath>
             </File>
           </Files>
         </Group>
