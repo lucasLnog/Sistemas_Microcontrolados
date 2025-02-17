@@ -4,6 +4,7 @@
 #include "../include/uart.h"
 #include "../include/timer.h"
 #include "../include/globals.h"
+#include "../include/adc.h"
 
 /* ========================== GLOBAL VARIABLES DECLARATIONS =========================== */
 
@@ -18,8 +19,11 @@ uint32_t ctl_sel_str_len = sizeof(ctl_select_str)/sizeof(char);
 char cli_sel_dir_str [] = "Selecione o sentido de rotacao: Horario (h) ou Anti-horario (a):\n\r";
 uint32_t cli_sel_dir_len = sizeof(cli_sel_dir_str)/sizeof(char);
 
-char cli_sel_speed_str [] = "Seleciona a velocidade de rotacao 1 = 10%, 2 = 20%, ..., 0 = 100%\n\r";
+char cli_sel_speed_str [] = "Seleciona a velocidade de rotacao 1 = 10\%, 2 = 20\%, ..., 0 = 100\%\n\r";
 uint32_t cli_sel_speed_len = sizeof(cli_sel_speed_str)/sizeof(char);
+
+char adc_read_str [] = "Leitura ADC: 0000\n\r";
+uint32_t adc_read_len = sizeof(adc_read_str)/sizeof(char);
 
 /* ============================ AUX FUNCTIONS DECLARATIONS ============================ */
 
@@ -32,8 +36,10 @@ void switch_state(char input);
 /* ============================= FUNCTION IMPLEMENTATIONS ============================= */
 
 void exec_machine(){
-	char val = exec_state();
-	switch_state(val);
+	while(1){
+		char val = exec_state();
+		switch_state(val);
+	}
 }
 
 char exec_state(){
@@ -104,7 +110,34 @@ char exec_clictl_state(){
 }
 
 char exec_potctl_state(){
-	return 'i';
+	uint32_t count = 0;
+	char clockwise_str [] = "CLOCKWISE\n\r";
+	char anti_clockwise_str [] = "ANTI-CLOCKWISE\n\r";
+	while(1){
+		uint32_t read_count = read_message(rx_buffer, 5);
+		if(read_count && rx_buffer[0] == 's'){
+			return 's';
+		}
+		if(count > 500){
+			uint32_t pot_read = read_adc_blocking();
+
+			if(pot_read > 2048){
+				send_message(anti_clockwise_str, sizeof(anti_clockwise_str)/sizeof(char));
+				set_motor_speed(pot_read - 2048, 1);
+			} else{
+				send_message(clockwise_str, sizeof(clockwise_str)/sizeof(char));
+				set_motor_speed(pot_read, 0);
+			}
+
+			for(uint8_t i = 0; i < 4; i++){
+				adc_read_str[adc_read_len - (i + 4)] = (char)((pot_read % 10) + 0x30);
+				pot_read /= 10;
+			}
+			send_message(adc_read_str, adc_read_len);
+			count = 0;
+		}
+		count++;
+	}
 }
 
 void switch_state(char read_char){
